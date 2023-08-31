@@ -12,25 +12,39 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
 
+        //Loading last saved version
+        System.out.println("Loading last saved version file...\n");
+        library.loadBooksFromFile("C:\\Users\\ferna\\Desktop\\BAS\\SOFT_DEV1\\LMS\\LMS\\src\\Books_Database.txt");
+
         while (!exit) {
             System.out.println("Menu:");
-            System.out.println("1. Add books from file");
+            System.out.println("1. Load books saved from file Books_Database.txt");
             System.out.println("2. List books");
-            System.out.println("3. Exit");
+            System.out.println("3. Remove Books by ID");
+            System.out.println("4. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
 
             switch (choice) {
                 case 1:
                     //Add Books from File Books_Database.txt // Needs the full path if not finding file
-                    library.addBooksFromFile("C:\\Users\\ferna\\Desktop\\BAS\\SOFT_DEV1\\LMS\\LMS\\src\\Books_Database.txt");
+                    library.loadBooksFromFile("C:\\Users\\ferna\\Desktop\\BAS\\SOFT_DEV1\\LMS\\LMS\\src\\Books_Database.txt");
                     library.listBooks();
                     break;
                 case 2:
                     //List Books
                     library.listBooks();
                     break;
+
                 case 3:
+                    //Remove Books
+                    System.out.println("Write the id of the book to be removed:\n");
+                    int id = scanner.nextInt();
+                    library.removeBook(id);
+                    library.listBooks();
+                    break;
+
+                case 4:
                     System.out.println("Exiting..." + "Byebye!\n");
                     exit = true;
                     break;

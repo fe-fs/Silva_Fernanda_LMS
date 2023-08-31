@@ -12,7 +12,7 @@ public class Library {
         books = new ArrayList<>();
     }
 
-    public void addBooksFromFile(String Books_Database) {
+    public void loadBooksFromFile(String Books_Database) {
         try {
             Scanner scanner = new Scanner(new File(Books_Database));
             while (scanner.hasNextLine()) {
@@ -31,6 +31,30 @@ public class Library {
         }
 
         Collections.sort(books, Comparator.comparingInt(Book::getId));
+    }
+
+    public void removeBook(int id){
+        int index = binarySearch(id, 0, books.size()-1);
+        if (index !=-1){
+            System.out.println("Book ID!" + id + " removed!");
+            books.remove(index);
+        }else{
+            System.out.println("Book ID: " + id +  " not found");
+        }
+    }
+
+    private int binarySearch(int id, int left, int right){
+        if(left > right){
+            return -1;
+        }
+        int mid = left + (right - left)/2;
+        if (books.get(mid).getId()==id){
+            return mid;
+        }else if(books.get(mid).getId()<id){
+            return binarySearch(id, mid+1, right);
+        }else{
+            return binarySearch(id,left,mid-1);
+        }
     }
 
     public void listBooks(){
