@@ -1,5 +1,11 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,7 +18,11 @@ public class Library {
         books = new ArrayList<>();
     }
 
-    public void loadBooksFromFile(String Books_Database) {
+    public void loadBooksFromFile(String Books_Database) throws IOException {
+        // clear any existing books before loading new books from the text file.
+        books.clear();
+
+        // Load new books from the text file
         try {
             Scanner scanner = new Scanner(new File(Books_Database));
             while (scanner.hasNextLine()) {
@@ -33,13 +43,35 @@ public class Library {
         Collections.sort(books, Comparator.comparingInt(Book::getId));
     }
 
-    public void removeBook(int id){
+    public void removeBook(int id) throws IOException {
+        // Backup the original database
+        backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
+
         int index = binarySearch(id, 0, books.size()-1);
         if (index !=-1){
             System.out.println("Book ID!" + id + " removed!");
             books.remove(index);
-        }else{
+
+            // Update the original database
+            updateDatabase(Path_to_Database.database);
+        } else {
             System.out.println("Book ID: " + id +  " not found");
+        }
+    }
+
+    //create a backup from the last loaded file before update the database content
+    public void backupDatabase(String originalFile, String backupFile) throws IOException {
+        Path src = Paths.get(originalFile);
+        Path dest = Paths.get(backupFile);
+        Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    //save changes from the software to the database text file
+    public void updateDatabase(String filename) throws IOException {
+        try (PrintWriter out = new PrintWriter(filename)) {
+            for (Book book : books) {
+                out.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor());
+            }
         }
     }
 

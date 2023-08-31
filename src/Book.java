@@ -15,6 +15,14 @@ public class Book {
         return id;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
     //overridden the toString method to return a string that represents the contents of the Book object in a more readable format.
     @Override
     public String toString() {
@@ -23,6 +31,7 @@ public class Book {
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'';
     }
+
 }
 
 
