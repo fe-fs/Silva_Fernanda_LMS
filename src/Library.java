@@ -25,14 +25,16 @@ public class Library {
                 books.add(new Book(id, title, author));
             }
             scanner.close();
+            System.out.println("File Loaded Successfully!");
         } catch (FileNotFoundException e) {
-            System.out.println("File not found " + Books_Database);
+            System.out.println("File not found " + Books_Database + "\n ---- Check if path for Books_Database.txt has changed! ---- ");
         }
 
         Collections.sort(books, Comparator.comparingInt(Book::getId));
     }
 
     public void listBooks(){
+        System.out.println("\n---------All Books in Database----------");
         for(Book book:books){
             System.out.println(book);
         }
