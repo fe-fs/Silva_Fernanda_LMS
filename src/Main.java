@@ -21,8 +21,8 @@ public class Main {
 
 
         while (!exit) {
-            System.out.println("Menu:");
-            System.out.println("1. Load books saved from file Books_Database.txt");
+            System.out.println("\n------Menu------");
+            System.out.println("1. Add new Books to Database");
             System.out.println("2. List books");
             System.out.println("3. Remove Books by ID");
             System.out.println("4. Exit");
@@ -32,6 +32,7 @@ public class Main {
             switch (choice) {
                 case 1:
                     //Add Books from File Books_Database.txt // Needs the full path if not finding file
+                    library.addBookToFile(Path_to_Database.database);
                     library.loadBooksFromFile(Path_to_Database.database);
                     library.listBooks();
                     break;

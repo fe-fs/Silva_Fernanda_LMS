@@ -1,15 +1,9 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Scanner;
+import java.util.*;
 
 public class Library {
     private ArrayList<Book> books;
@@ -41,6 +35,52 @@ public class Library {
         }
 
         Collections.sort(books, Comparator.comparingInt(Book::getId));
+    }
+
+    public void addBookToFile(String Books_Database) throws IOException {
+        // Backup the original database
+        backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
+
+        // Load existing books from the text file
+        List<Book> books = new ArrayList<>();
+        try {
+            Scanner scanner = new Scanner(new File(Books_Database));
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] bookInfo = line.split(",");
+
+                int id = Integer.parseInt(bookInfo[0]);
+                String title = bookInfo[1];
+                String author = bookInfo[2];
+                books.add(new Book(id, title, author));
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found " + Books_Database + "\n ---- Check if path for Books_Database.txt has changed! ---- ");
+        }
+
+        // Generate a new ID by checking the .txt file for existing ID numbers and continuing from the last ID saved on it
+        int newId = books.stream().mapToInt(Book::getId).max().orElse(0) + 1;
+
+        // Prompt the user to enter the name of the book and the author
+        Scanner inputScanner = new Scanner(System.in);
+        System.out.print("Enter the title of the book: ");
+        String title = inputScanner.nextLine();
+        System.out.print("Enter the author of the book: ");
+        String author = inputScanner.nextLine();
+
+        // Add new book to list
+        books.add(new Book(newId, title, author));
+
+        // Save updated list of books to text file
+        try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
+            for (Book book : books) {
+                writer.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor());
+            }
+            System.out.println("Book added successfully!");
+        } catch (IOException e) {
+            System.out.println("Error writing to file " + Books_Database);
+        }
     }
 
     public void removeBook(int id) throws IOException {
