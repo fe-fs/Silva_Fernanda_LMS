@@ -47,7 +47,7 @@ public class Book {
     public String getAuthor() {
         return author;
     }
-    
+
     /**
      * Method name: toString
      * This method returns a string representation of the book.
