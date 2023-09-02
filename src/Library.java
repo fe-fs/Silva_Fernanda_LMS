@@ -5,13 +5,29 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
+/**
+ * Class name: Library
+ * This class represents a library and its collection of books.
+ * It provides methods for loading books from a text file, adding new books to the collection, listing all books in the collection remove books from the file,
+ * and backup an old version of the file before doing new changes.
+ */
 public class Library {
     private ArrayList<Book> books;
 
+    /**
+     * Constructor for the Library class.
+     * Initializes an empty list of books.
+     */
     public Library() {
         books = new ArrayList<>();
     }
 
+    /**
+     * Method name: loadBooksFromFile
+     * This method loads books from a text file into the library's collection of books.
+     * @param Books_Database The path to the text file containing the books to be loaded.
+     * @throws IOException If an input or output exception occurred
+     */
     public void loadBooksFromFile(String Books_Database) throws IOException {
         // clear any existing books before loading new books from the text file.
         books.clear();
@@ -36,7 +52,12 @@ public class Library {
 
         Collections.sort(books, Comparator.comparingInt(Book::getId));
     }
-
+    /**
+     * Method name: addBookToFile
+     * This method adds a new book to the library's collection and saves it to a text file.
+     * @param Books_Database The path to the text file where the new book will be saved.
+     * @throws IOException If an input or output exception occurred
+     */
     public void addBookToFile(String Books_Database) throws IOException {
         // Backup the original database
         backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
@@ -82,7 +103,12 @@ public class Library {
             System.out.println("Error writing to file " + Books_Database);
         }
     }
-
+    /**
+     * Method name: removeBook
+     * This method removes a book from the library's collection using its ID number.
+     * @param id The ID number of the book to be removed.
+     * @throws IOException If an input or output exception occurred
+     */
     public void removeBook(int id) throws IOException {
         // Backup the original database
         backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
@@ -92,20 +118,32 @@ public class Library {
             System.out.println("Book ID!" + id + " removed!");
             books.remove(index);
 
-            // Update the original database
+            // Update the original database   ---- NEEDS to make a correction to the id after removed, if continue with this project!
             updateDatabase(Path_to_Database.database);
         } else {
             System.out.println("Book ID: " + id +  " not found");
         }
     }
 
+    /**
+     * Method name: backupDatabase
+     * This method creates a backup of the original database file.
+     * @param originalFile The path to the original database file.
+     * @param backupFile The path to the backup file.
+     * @throws IOException If an input or output exception occurred
+     */
     //create a backup from the last loaded file before update the database content
     public void backupDatabase(String originalFile, String backupFile) throws IOException {
         Path src = Paths.get(originalFile);
         Path dest = Paths.get(backupFile);
         Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
     }
-
+    /**
+     * Method name: updateDatabase
+     * This method saves changes made to the library's collection of books to the database text file.
+     * @param filename The path to the database text file.
+     * @throws IOException If an input or output exception occurred
+     */
     //save changes from the software to the database text file
     public void updateDatabase(String filename) throws IOException {
         try (PrintWriter out = new PrintWriter(filename)) {
@@ -114,7 +152,14 @@ public class Library {
             }
         }
     }
-
+    /**
+     * Method name: binarySearch
+     * This method performs a binary search on the library's collection of books to find a book with a specific ID number.
+     * @param id The ID number of the book to be found.
+     * @param left The leftmost index of the search range.
+     * @param right The rightmost index of the search range.
+     * @return The index of the book with the specified ID number, or -1 if not found.
+     */
     private int binarySearch(int id, int left, int right){
         if(left > right){
             return -1;
@@ -128,7 +173,10 @@ public class Library {
             return binarySearch(id,left,mid-1);
         }
     }
-
+    /**
+     * Method name: listBooks
+     * This method lists all books currently in the library's collection.
+     */
     public void listBooks(){
         System.out.println("\n---------All Books in Database----------");
         for(Book book:books){

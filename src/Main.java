@@ -4,10 +4,28 @@
 * Class: Software Development I CEN-3024C-16046
 * Professor: Walauskis
 */
+
+/**
+ * Library Management System (LMS) is a console-based application for managing a library's collection of books.
+ * The LMS allows users to add new books to the collection from a text file, remove a book from the collection using its ID number,
+ * and list all books currently in the collection.
+ * The text file used to add new books should be formatted as follows: each line represents a book, and the id, title, and author are separated by a comma.
+ */
+
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * Class name: Main
+ * This class is the entry point of the Library Management System program. It handles the user interface and interactions.
+ */
 public class Main {
+    /**
+     * Method name: main
+     * This method is the entry point of the program. It initializes the library, handles user input, and controls the program flow.
+     * @param args Command line arguments
+     * @throws IOException If an input or output exception occurred
+     */
     public static void main(String[] args) throws IOException {
         Library library = new Library();
         Scanner scanner = new Scanner(System.in);
@@ -19,7 +37,7 @@ public class Main {
         library.loadBooksFromFile(Path_to_Database.database);
 
 
-
+        //menu
         while (!exit) {
             System.out.println("\n------Menu------");
             System.out.println("1. Add new Books to Database");
@@ -31,7 +49,7 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    //Add Books from File Books_Database.txt // Needs the full path if not finding file
+                    //Add Books from File Books_Database.txt
                     library.addBookToFile(Path_to_Database.database);
                     library.loadBooksFromFile(Path_to_Database.database);
                     library.listBooks();
@@ -59,6 +77,7 @@ public class Main {
                     break;
 
                 case 4:
+                    //exit
                     System.out.println("Exiting..." + "Byebye!\n");
                     exit = true;
                     break;
