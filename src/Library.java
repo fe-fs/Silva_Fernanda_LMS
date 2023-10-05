@@ -42,7 +42,8 @@ public class Library {
                 int id = Integer.parseInt(bookInfo[0]);
                 String title = bookInfo[1];
                 String author = bookInfo[2];
-                books.add(new Book(id, title, author));
+                String barcode = bookInfo.length > 3 ? bookInfo[3] : "default_barcode";
+                books.add(new Book(id, title, author, barcode));
             }
             scanner.close();
             System.out.println("File Loaded Successfully!");
@@ -73,7 +74,8 @@ public class Library {
                 int id = Integer.parseInt(bookInfo[0]);
                 String title = bookInfo[1];
                 String author = bookInfo[2];
-                books.add(new Book(id, title, author));
+                String barcode = bookInfo.length > 3 ? bookInfo[3] : "default_barcode";
+                books.add(new Book(id, title, author, barcode)); // Modified to include barcode
             }
             scanner.close();
         } catch (FileNotFoundException e) {
@@ -90,13 +92,25 @@ public class Library {
         System.out.print("Enter the author of the book: ");
         String author = inputScanner.nextLine();
 
+        // Prompt the user to enter a valid barcode
+        String barcode;
+        while (true) {
+            System.out.print("Enter a barcode sequence of 8 characters without spaces or special characters: ");
+            barcode = inputScanner.nextLine();
+            if (barcode.matches("[\\w]{8}")) { // Checks if barcode is exactly 8 alphanumeric characters
+                break;
+            } else {
+                System.out.println("Invalid barcode. Please try again.");
+            }
+        }
+
         // Add new book to list
-        books.add(new Book(newId, title, author));
+        books.add(new Book(newId, title, author, barcode)); // Modified to include barcode
 
         // Save updated list of books to text file
         try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
             for (Book book : books) {
-                writer.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor());
+                writer.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + ", " + book.getBarcode()); // Modified to include barcode
             }
             System.out.println("Book added successfully!");
         } catch (IOException e) {
@@ -126,6 +140,43 @@ public class Library {
     }
 
     /**
+     * Method name: removeBook
+     * This method removes a book from the library's collection using its ID or barcode.
+     *
+     * @param identifier The ID or barcode of the book to be removed.
+     * @throws IOException If an input or output exception occurred
+     */
+    public void removeBookBarcode(String identifier, boolean isBarcode) throws IOException {
+        // Backup the original database
+        backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
+
+        // Find the book with the given identifier
+        Book bookToRemove = null;
+        for (Book book : books) {
+            if ((isBarcode && book.getBarcode().equals(identifier)) || (!isBarcode && String.valueOf(book.getId()).equals(identifier))) {
+                bookToRemove = book;
+                break;
+            }
+        }
+
+        // If the book was found, remove it
+        if (bookToRemove != null) {
+            books.remove(bookToRemove);
+            System.out.println("Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " removed!");
+
+            // Update the ID numbers of the remaining books
+            for (int i = 0; i < books.size(); i++) {
+                books.get(i).setId(i + 1);
+            }
+
+            // Update the original database
+            updateDatabase(Path_to_Database.database);
+        } else {
+            System.out.println("Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " not found");
+        }
+    }
+
+    /**
      * Method name: backupDatabase
      * This method creates a backup of the original database file.
      * @param originalFile The path to the original database file.
@@ -148,7 +199,7 @@ public class Library {
     public void updateDatabase(String filename) throws IOException {
         try (PrintWriter out = new PrintWriter(filename)) {
             for (Book book : books) {
-                out.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor());
+                out.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + ", " + book.getBarcode());
             }
         }
     }

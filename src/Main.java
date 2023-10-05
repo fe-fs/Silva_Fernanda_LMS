@@ -43,9 +43,11 @@ public class Main {
             System.out.println("1. Add new Books to Database");
             System.out.println("2. List books");
             System.out.println("3. Remove Books by ID");
-            System.out.println("4. Exit");
+            System.out.println("4. Remove Books by Barcode");
+            System.out.println("5. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline left-over
 
             switch (choice) {
                 case 1:
@@ -77,6 +79,22 @@ public class Main {
                     break;
 
                 case 4:
+                    //Remove Books
+                    System.out.println("Write the Barcode of the book to be removed:\n");
+                    String barcode = scanner.nextLine();
+                    library.removeBookBarcode(barcode, true); // Pass the barcode to the removeBook method
+                    System.out.println("\n\nDatabase backup - Backup_Books_Database.txt create...\n saving new database...");
+
+//create this thread to make a little pause for the user know that a Backup exists for their database
+                    try {
+                        Thread.sleep(2000); // Pause for 2000 milliseconds, or 2 seconds
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    library.listBooks();
+
+                    break;
+                case 5:
                     //exit
                     System.out.println("Exiting..." + "Byebye!\n");
                     exit = true;
