@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 /**
  * Class name: Book
  * This class represents a book with an ID, title, and author.
@@ -6,8 +8,9 @@ public class Book {
     private int id;
     private String title;
     private String author;
-
     private String barcode;
+    private boolean checkedOut;
+    private LocalDate dueDate;
 
     /**
      * Constructor for the Book class.
@@ -16,7 +19,7 @@ public class Book {
      * @param id      The ID of the book.
      * @param title   The title of the book.
      * @param author  The author of the book.
-     * @param barcode
+     * @param barcode The barcode of the book.
      */
     public Book(int id, String title, String author, String barcode) {
         this.id = id;
@@ -25,6 +28,11 @@ public class Book {
         this.barcode = barcode;
     }
 
+    //for checkOut by title
+    public Book(String title) {
+        this.title = title;
+        this.checkedOut = false;
+    }
 
     /**
      * Method name: getId
@@ -74,12 +82,34 @@ public class Book {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
-                ", barcode='" + barcode + '\'';
+                ", barcode=" + barcode +
+                ", checkedOut=" + checkedOut +
+                ", dueDate=" + (dueDate != null ? dueDate : "null");
     }
 
 
     public void setId(int i) {
     }
+
+    public boolean isCheckedOut() {
+        return checkedOut;
+    }
+
+    public void setCheckedOut(boolean checkedOut) {
+        this.checkedOut = checkedOut;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+        if (dueDate != null) {
+            this.checkedOut = true;
+        }
+    }
+
 }
 
 

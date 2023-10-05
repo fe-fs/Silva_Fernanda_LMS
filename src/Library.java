@@ -3,6 +3,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -43,7 +45,11 @@ public class Library {
                 String title = bookInfo[1];
                 String author = bookInfo[2];
                 String barcode = bookInfo.length > 3 ? bookInfo[3] : "default_barcode";
-                books.add(new Book(id, title, author, barcode));
+                LocalDate dueDate = !bookInfo[4].equals("null") ? LocalDate.parse(bookInfo[4]) : null;
+
+                Book book = new Book(id, title, author, barcode);
+                book.setDueDate(dueDate);
+                books.add(book);
             }
             scanner.close();
             System.out.println("File Loaded Successfully!");
@@ -110,7 +116,7 @@ public class Library {
         // Save updated list of books to text file
         try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
             for (Book book : books) {
-                writer.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + ", " + book.getBarcode()); // Modified to include barcode
+                writer.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode()); // Modified to include barcode
             }
             System.out.println("Book added successfully!");
         } catch (IOException e) {
@@ -199,7 +205,8 @@ public class Library {
     public void updateDatabase(String filename) throws IOException {
         try (PrintWriter out = new PrintWriter(filename)) {
             for (Book book : books) {
-                out.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + ", " + book.getBarcode());
+                String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
+                out.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate);
             }
         }
     }
@@ -235,4 +242,41 @@ public class Library {
         }
     }
 
+    /**
+     * Method name: CheckOut
+     * @param title
+     * @return
+     */
+
+    public boolean checkoutBook(String title) {
+        Book bookToCheckout = null;
+        for (Book book : books) {
+            if (book.getTitle().equals(title)) {
+                bookToCheckout = book;
+                break;
+            }
+        }
+
+        if (bookToCheckout == null) {
+            System.out.println("Book not found in the library.");
+            return false;
+        } else if (bookToCheckout.isCheckedOut()) {
+            System.out.println("Book is already checked out.");
+            return false;
+        } else {
+            bookToCheckout.setCheckedOut(true);
+            bookToCheckout.setDueDate(LocalDate.now().plus(3, ChronoUnit.WEEKS));
+            System.out.println("Book checked out. Due date is in 3 weeks: " + bookToCheckout.getDueDate());
+
+            // Save updated list of books to text file
+            try {
+                updateDatabase(Path_to_Database.database);
+                System.out.println("Database updated successfully!");
+            } catch (IOException e) {
+                System.out.println("Error writing to file " + Path_to_Database.database);
+            }
+
+            return true;
+        }
+    }
 }

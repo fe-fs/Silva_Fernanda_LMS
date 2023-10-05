@@ -38,13 +38,18 @@ public class Main {
 
 
         //menu
+
         while (!exit) {
-            System.out.println("\n------Menu------");
+            System.out.println("\n------Management------");
             System.out.println("1. Add new Books to Database");
             System.out.println("2. List books");
             System.out.println("3. Remove Books by ID");
             System.out.println("4. Remove Books by Barcode");
-            System.out.println("5. Exit");
+            System.out.println("\n----------User-------");
+            System.out.println("2. List books");
+            System.out.println("5.CheckOut Books by title");
+            System.out.println("6.CheckIn Books by title");
+            System.out.println("7. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();  // Consume newline left-over
@@ -95,6 +100,20 @@ public class Main {
 
                     break;
                 case 5:
+                    // Checkout a book
+                    System.out.print("Enter the title of the book: ");
+                    String title = scanner.nextLine();
+                    boolean success = library.checkoutBook(title);
+                    if (success) {
+                        System.out.println("Successfully checked out " + title);
+                    } else {
+                        System.out.println("Failed to check out " + title);
+                    }
+                    library.listBooks();
+                    break;
+                case 6:
+
+                case 7:
                     //exit
                     System.out.println("Exiting..." + "Byebye!\n");
                     exit = true;
