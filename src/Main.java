@@ -103,15 +103,27 @@ public class Main {
                     // Checkout a book
                     System.out.print("Enter the title of the book: ");
                     String title = scanner.nextLine();
-                    boolean success = library.checkoutBook(title);
-                    if (success) {
+                    boolean successOut = library.checkoutBook(title);
+                    if (successOut) {
                         System.out.println("Successfully checked out " + title);
                     } else {
                         System.out.println("Failed to check out " + title);
                     }
                     library.listBooks();
                     break;
+
                 case 6:
+                    // CheckIn a book
+                    System.out.print("Enter the title of the book: ");
+                    title = scanner.nextLine();
+                    boolean successIn = library.checkInBook(title);
+                    if (successIn) {
+                        System.out.println("Successfully checked In " + title);
+                    } else {
+                        System.out.println("Failed to checkIn " + title);
+                    }
+                    library.listBooks();
+                    break;
 
                 case 7:
                     //exit

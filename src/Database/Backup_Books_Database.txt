@@ -1,10 +1,10 @@
-1, To Kill a Mockingbird, Harper Lee, 12345678, null
-2, Pride and Prejudice, Jane Austen, 23456789, null
-3, The Great Gatsby, F. Scott Fitzgerald, 34567890, null
-4, Moby Dick, Herman Melville, 45678901, null
-5, War and Peace, Leo Tolstoy, 56789012, null
-6, Ulysses, James Joyce, 67890123, null
-7, Don Quixote, Miguel de Cervantes, 78901234, null
-8, The Odyssey, Homer, 89012345, null
-9, Crime and Punishment, Fyodor Dostoevsky, 90123456, null
-10, Madame Bovary, Gustave Flaubert, 01234567,null
+1,To Kill a Mockingbird,Harper Lee,12345678,2023-10-01
+2,Pride and Prejudice,Jane Austen,23456789,2023-10-26
+3,The Great Gatsby,F. Scott Fitzgerald,34567890,null
+4,Moby Dick,Herman Melville,45678901,2023-09-30
+5,War and Peace,Leo Tolstoy,56789012,null
+6,Ulysses,James Joyce,67890123,null
+7,Don Quixote,Miguel de Cervantes,78901234,2023-10-15
+8,The Odyssey,Homer,89012345,null
+9,Crime and Punishment,Fyodor Dostoevsky,90123456,null
+10,Madame Bovary,Gustave Flaubert,01234567,null

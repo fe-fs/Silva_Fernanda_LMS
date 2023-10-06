@@ -45,7 +45,7 @@ public class Library {
                 String title = bookInfo[1];
                 String author = bookInfo[2];
                 String barcode = bookInfo.length > 3 ? bookInfo[3] : "default_barcode";
-                LocalDate dueDate = !bookInfo[4].equals("null") ? LocalDate.parse(bookInfo[4]) : null;
+                LocalDate dueDate = !bookInfo[4].trim().equals("null") ? LocalDate.parse(bookInfo[4].trim()) : null;
 
                 Book book = new Book(id, title, author, barcode);
                 book.setDueDate(dueDate);
@@ -276,6 +276,36 @@ public class Library {
                 System.out.println("Error writing to file " + Path_to_Database.database);
             }
 
+            return true;
+        }
+    }
+
+    /**checkIn
+     *
+     * @param title
+     */
+    public boolean checkInBook(String title) {
+        Book bookToCheckIn = null;
+        for (Book book : books) {
+            if (book.getTitle().equals(title)) {
+                bookToCheckIn = book;
+                break;
+            }
+        }
+
+        if (bookToCheckIn == null) {
+            System.out.println("Book not found in the library.");
+            return false;
+        } else if (!bookToCheckIn.isCheckedOut()) {
+            System.out.println("This book was not checked out.");
+            return false;
+        } else {
+            bookToCheckIn.setCheckedOut(false);
+            if (bookToCheckIn.getDueDate().isBefore(LocalDate.now())) {
+                System.out.println("The due date for this book has passed. There is a fine of $5 to be paid at the library front.");
+            }
+            bookToCheckIn.setDueDate(null);
+            System.out.println("Book checked in successfully.");
             return true;
         }
     }
