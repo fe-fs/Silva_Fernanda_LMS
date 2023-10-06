@@ -1,3 +1,10 @@
+/*
+ * Library Management System
+ * Name: Fernanda Frederico Ribeiro da Silva
+ * Class: Software Development I CEN-3024C-16046
+ * Professor: Walauskis
+ */
+
 /**
  * Class name: Path_to_Database
  * This class contains the paths to the database and its backup file.

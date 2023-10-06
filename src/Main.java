@@ -40,16 +40,13 @@ public class Main {
         //menu
 
         while (!exit) {
-            System.out.println("\n------Management------");
-            System.out.println("1. Add new Books to Database");
-            System.out.println("2. List books");
-            System.out.println("3. Remove Books by ID");
-            System.out.println("4. Remove Books by Barcode");
-            System.out.println("\n----------User-------");
-            System.out.println("2. List books");
-            System.out.println("5.CheckOut Books by title");
-            System.out.println("6.CheckIn Books by title");
-            System.out.println("7. Exit");
+            System.out.println("\n----------------- Library Management System -----------------\n");
+            System.out.printf("%-30s %-30s %n", "------ Management ------", "------ User ------");
+            System.out.printf("%-30s %-30s %n", "1. Add new Books to Database", "2. List books");
+            System.out.printf("%-30s %-30s %n", "2. List books", "5. CheckOut Books by title");
+            System.out.printf("%-30s %-30s %n", "3. Remove Books by ID", "6. CheckIn Books by title");
+            System.out.printf("%-30s %-30s %n", "4. Remove Books by Barcode", "");
+            System.out.println("\n7. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();  // Consume newline left-over
@@ -90,7 +87,7 @@ public class Main {
                     library.removeBookBarcode(barcode, true); // Pass the barcode to the removeBook method
                     System.out.println("\n\nDatabase backup - Backup_Books_Database.txt create...\n saving new database...");
 
-//create this thread to make a little pause for the user know that a Backup exists for their database
+                    //create this thread to make a little pause for the user know that a Backup exists for their database
                     try {
                         Thread.sleep(2000); // Pause for 2000 milliseconds, or 2 seconds
                     } catch (InterruptedException e) {
@@ -109,6 +106,13 @@ public class Main {
                     } else {
                         System.out.println("Failed to check out " + title);
                     }
+
+                    //create this thread to make a little pause for the user read
+                    try {
+                        Thread.sleep(2000); // Pause for 2000 milliseconds, or 2 seconds
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     library.listBooks();
                     break;
 
@@ -121,6 +125,13 @@ public class Main {
                         System.out.println("Successfully checked In " + title);
                     } else {
                         System.out.println("Failed to checkIn " + title);
+                    }
+
+                    //create this thread to make a little pause for the user read
+                    try {
+                        Thread.sleep(2000); // Pause for 2000 milliseconds, or 2 seconds
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                     library.listBooks();
                     break;

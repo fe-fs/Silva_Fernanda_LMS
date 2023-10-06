@@ -1,8 +1,15 @@
+/*
+ * Library Management System
+ * Name: Fernanda Frederico Ribeiro da Silva
+ * Class: Software Development I CEN-3024C-16046
+ * Professor: Walauskis
+ */
+
 import java.time.LocalDate;
 
 /**
  * Class name: Book
- * This class represents a book with an ID, title, and author.
+ * This class represents a book with an ID, title, and author, barcode with 8 digits, checkIn and checkOut booleans and dueDate.
  */
 public class Book {
     private int id;
@@ -91,6 +98,8 @@ public class Book {
     public void setId(int i) {
     }
 
+
+    //checkIn and Out
     public boolean isCheckedOut() {
         return checkedOut;
     }
@@ -103,6 +112,10 @@ public class Book {
         return dueDate;
     }
 
+    /**DueDate
+     *
+     * @param dueDate
+     */
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
         if (dueDate != null) {

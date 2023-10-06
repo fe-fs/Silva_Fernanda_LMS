@@ -1,3 +1,10 @@
+/*
+ * Library Management System
+ * Name: Fernanda Frederico Ribeiro da Silva
+ * Class: Software Development I CEN-3024C-16046
+ * Professor: Walauskis
+ */
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
