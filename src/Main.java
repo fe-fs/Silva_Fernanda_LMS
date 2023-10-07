@@ -64,7 +64,7 @@ public class Main {
                     break;
 
                 case 3:
-                    //Remove Books
+                    //Remove Books By ID
                     System.out.println("Write the id of the book to be removed:\n");
                     int id = scanner.nextInt();
                     library.removeBook(id);
@@ -81,7 +81,7 @@ public class Main {
                     break;
 
                 case 4:
-                    //Remove Books
+                    //Remove Books BY Barcode
                     System.out.println("Write the Barcode of the book to be removed:\n");
                     String barcode = scanner.nextLine();
                     library.removeBookBarcode(barcode, true); // Pass the barcode to the removeBook method
@@ -96,6 +96,7 @@ public class Main {
                     library.listBooks();
 
                     break;
+
                 case 5:
                     // Checkout a book
                     System.out.print("Enter the title of the book: ");

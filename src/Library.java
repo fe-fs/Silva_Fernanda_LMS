@@ -153,10 +153,11 @@ public class Library {
     }
 
     /**
-     * Method name: removeBook
+     * Method name: removeBookBarcode
      * This method removes a book from the library's collection using its ID or barcode.
      *
      * @param identifier The ID or barcode of the book to be removed.
+     * @param isBarcode A boolean flag indicating whether the identifier is a barcode. If true, the identifier is treated as a barcode; if false, it's treated as an ID.
      * @throws IOException If an input or output exception occurred
      */
     public void removeBookBarcode(String identifier, boolean isBarcode) throws IOException {
@@ -238,6 +239,7 @@ public class Library {
             return binarySearch(id,left,mid-1);
         }
     }
+
     /**
      * Method name: listBooks
      * This method lists all books currently in the library's collection.
@@ -250,11 +252,12 @@ public class Library {
     }
 
     /**
-     * Method name: CheckOut
-     * @param title
-     * @return
+     * Method name: checkoutBook
+     * This method checks out a book from the library's collection using its title. If the book is found and is not already checked out, it sets the book as checked out and assigns a due date 3 weeks from now. It then updates the library database.
+     *
+     * @param title The title of the book to be checked out.
+     * @return boolean Returns true if the book was successfully checked out, false otherwise.
      */
-
     public boolean checkoutBook(String title) {
         Book bookToCheckout = null;
         for (Book book : books) {
@@ -287,9 +290,12 @@ public class Library {
         }
     }
 
-    /**checkIn
+    /**
+     * Method name: checkInBook
+     * This method checks in a book to the library's collection using its title. If the book is found and is checked out, it sets the book as checked in and removes the due date. If the due date has passed, it informs the user about a fine. It then prints a message indicating that the book was successfully checked in.
      *
-     * @param title
+     * @param title The title of the book to be checked in.
+     * @return boolean Returns true if the book was successfully checked in, false otherwise.
      */
     public boolean checkInBook(String title) {
         Book bookToCheckIn = null;

@@ -35,7 +35,12 @@ public class Book {
         this.barcode = barcode;
     }
 
-    //for checkOut by title
+    /**
+     * Constructor name: Book
+     * This constructor creates a new Book object with the given title. The book is not checked out by default.
+     *
+     * @param title The title of the book.
+     */
     public Book(String title) {
         this.title = title;
         this.checkedOut = false;
@@ -77,6 +82,19 @@ public class Book {
     }
 
     /**
+     * Method name: setDueDate
+     * This method sets the due date of the book. If the due date is not null, it also marks the book as checked out.
+     *
+     * @param dueDate The due date to be set for the book.
+     */
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+        if (dueDate != null) {
+            this.checkedOut = true;
+        }
+    }
+
+    /**
      * Method name: toString
      * This method returns a string representation of the book.
      * overridden the toString method to return a string that represents the contents of the Book object in a more readable format.
@@ -95,9 +113,7 @@ public class Book {
     }
 
 
-    public void setId(int i) {
-    }
-
+    public void setId(int i) { }
 
     //checkIn and Out
     public boolean isCheckedOut() {
@@ -112,16 +128,7 @@ public class Book {
         return dueDate;
     }
 
-    /**DueDate
-     *
-     * @param dueDate
-     */
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-        if (dueDate != null) {
-            this.checkedOut = true;
-        }
-    }
+
 
 }
 
