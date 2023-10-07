@@ -16,7 +16,7 @@ public class Book {
     private String title;
     private String author;
     private String barcode;
-    private boolean checkedOut;
+    private String checkStatus;
     private LocalDate dueDate;
 
     /**
@@ -43,7 +43,6 @@ public class Book {
      */
     public Book(String title) {
         this.title = title;
-        this.checkedOut = false;
     }
 
     /**
@@ -90,7 +89,7 @@ public class Book {
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
         if (dueDate != null) {
-            this.checkedOut = true;
+            this.checkStatus = "checkedOut";
         }
     }
 
@@ -108,28 +107,67 @@ public class Book {
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", barcode=" + barcode +
-                ", checkedOut=" + checkedOut +
+                ", checkStatus=" + checkStatus +
                 ", dueDate=" + (dueDate != null ? dueDate : "null");
     }
 
 
-    public void setId(int i) { }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     //checkIn and Out
-    public boolean isCheckedOut() {
-        return checkedOut;
-    }
 
+    /**
+     * Sets the check status of the book.
+     * If the book is checked out, the check status is set to "checkedOut".
+     * If the book is checked in, the check status is set to "checkedIn".
+     *
+     * @param checkedOut A boolean indicating whether the book is checked out.
+     */
     public void setCheckedOut(boolean checkedOut) {
-        this.checkedOut = checkedOut;
+        if (checkedOut) {
+            this.checkStatus = "checkedOut";
+        } else {
+            this.checkStatus = "checkedIn";
+        }
     }
 
+    /**
+     * Checks if the book is checked out.
+     *
+     * @return A boolean indicating whether the book is checked out.
+     */
+    public boolean isCheckedOut() {
+        return "checkedOut".equals(this.checkStatus);
+    }
+
+    /**
+     * Gets the check status of the book.
+     *
+     * @return A string representing the check status of the book.
+     */
+    public String getCheckStatus() {
+        return this.checkStatus;
+    }
+
+    /**
+     * Sets the check status of the book.
+     *
+     * @param checkStatus A string representing the check status of the book.
+     */
+    public void setCheckStatus(String checkStatus) {
+        this.checkStatus = checkStatus;
+    }
+
+    /**
+     * Gets the due date of the book.
+     *
+     * @return A LocalDate representing the due date of the book.
+     */
     public LocalDate getDueDate() {
         return dueDate;
     }
-
-
-
 }
 
 

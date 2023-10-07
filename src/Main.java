@@ -43,10 +43,11 @@ public class Main {
             System.out.println("\n----------------- Library Management System -----------------\n");
             System.out.printf("%-30s %-30s %n", "------ Management ------", "------ User ------");
             System.out.printf("%-30s %-30s %n", "1. Add new Books to Database", "2. List books");
-            System.out.printf("%-30s %-30s %n", "2. List books", "5. CheckOut Books by title");
-            System.out.printf("%-30s %-30s %n", "3. Remove Books by ID", "6. CheckIn Books by title");
+            System.out.printf("%-30s %-30s %n", "2. List books", "6. CheckOut Books by title");
+            System.out.printf("%-30s %-30s %n", "3. Remove Books by ID", "7. CheckIn Books by title");
             System.out.printf("%-30s %-30s %n", "4. Remove Books by Barcode", "");
-            System.out.println("\n7. Exit");
+            System.out.printf("%-30s %-30s %n", "5. Remove Books by Title", "");
+            System.out.println("\n8. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();  // Consume newline left-over
@@ -98,10 +99,19 @@ public class Main {
                     break;
 
                 case 5:
+                    // Remove books by title
+                    System.out.println("Please enter the title of the book you want to remove:");
+                    String title = scanner.nextLine();
+                    // Remove the book with the given title
+                    library.removeBookByTitle(title);
+                    library.listBooks();
+                    break;
+
+                case 6:
                     // Checkout a book
                     System.out.print("Enter the title of the book: ");
-                    String title = scanner.nextLine();
-                    boolean successOut = library.checkoutBook(title);
+                    title = scanner.nextLine();
+                    boolean successOut = library.checkoutBook(title, Path_to_Database.database);
                     if (successOut) {
                         System.out.println("Successfully checked out " + title);
                     } else {
@@ -117,11 +127,11 @@ public class Main {
                     library.listBooks();
                     break;
 
-                case 6:
+                case 7:
                     // CheckIn a book
                     System.out.print("Enter the title of the book: ");
                     title = scanner.nextLine();
-                    boolean successIn = library.checkInBook(title);
+                    boolean successIn = library.checkInBook(title, Path_to_Database.database);
                     if (successIn) {
                         System.out.println("Successfully checked In " + title);
                     } else {
@@ -137,7 +147,7 @@ public class Main {
                     library.listBooks();
                     break;
 
-                case 7:
+                case 8:
                     //exit
                     System.out.println("Exiting..." + "Byebye!\n");
                     exit = true;
