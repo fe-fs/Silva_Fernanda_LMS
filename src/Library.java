@@ -107,32 +107,39 @@ public class Library {
         System.out.print("Enter the author of the book: ");
         String author = inputScanner.nextLine();
 
-        // Prompt the user to enter a valid barcode
+        //Prompt the user to enter a valid barcode
         String barcode;
         while (true) {
             System.out.print("Enter a barcode sequence of 8 characters without spaces or special characters: ");
             barcode = inputScanner.nextLine();
-            if (barcode.matches("[\\w]{8}")) { // Checks if barcode is exactly 8 alphanumeric characters
-                break;
-            } else {
+            if (!barcode.matches("[\\w]{8}")) { // Checks if barcode is exactly 8 alphanumeric characters
                 System.out.println("Invalid barcode. Please try again.");
+            } else {
+                final String finalBarcode = barcode;
+                boolean barcodeExists = books.stream().anyMatch(book -> book.getBarcode().equals(finalBarcode));
+                if (barcodeExists) {
+                    System.out.println("A book with this barcode already exists. Please try again with a different barcode.");
+                } else {
+                    break;
+                }
             }
         }
 
-        // Add new book to list
+// Add new book to list
         books.add(new Book(newId, title, author, barcode)); // Modified to include barcode
 
-        // Save updated list of books to text file
+// Save updated list of books to text file
         try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
             for (Book book : books) {
                 String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                writer.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate); // Modified to include dueDate
+                writer.println(book.getId() + "," + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate); // Modified to include dueDate
             }
             System.out.println("Book added successfully!");
         } catch (IOException e) {
             System.out.println("Error writing to file " + Books_Database);
         }
     }
+
     /**
      * Method name: removeBook
      * This method removes a book from the library's collection using its ID number.
@@ -222,19 +229,24 @@ public class Library {
      * @param right The rightmost index of the search range.
      * @return The index of the book with the specified title, or -1 if not found.
      */
-    private int binarySearchByTitle(String title, int left, int right) {
-        if (left > right) {
-            return -1;
-        }
-        int mid = left + (right - left) / 2;
-        int comparison = books.get(mid).getTitle().compareToIgnoreCase(title);
-        if (comparison == 0) {
-            return mid;
-        } else if (comparison < 0) {
+    public int binarySearchByTitle(String title, int left, int right) {
+        if (right >= left) {
+            int mid = left + (right - left) / 2;
+
+            // If the book is present at the middle
+            if (books.get(mid).getTitle().equals(title))
+                return mid;
+
+            // If the book title is lexicographically smaller
+            if (books.get(mid).getTitle().compareTo(title) > 0)
+                return binarySearchByTitle(title, left, mid - 1);
+
+            // Else the book can only be present in right subarray
             return binarySearchByTitle(title, mid + 1, right);
-        } else {
-            return binarySearchByTitle(title, left, mid - 1);
         }
+
+        // We reach here when the book is not present in the list
+        return -1;
     }
 
     /**
@@ -261,7 +273,7 @@ public class Library {
         try (PrintWriter out = new PrintWriter(filename)) {
             for (Book book : books) {
                 String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                out.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate);
+                out.println(book.getId() + "," + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate);
             }
         }
     }
@@ -395,7 +407,7 @@ public class Library {
             try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
                 for (Book book : books) {
                     String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                    writer.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
+                    writer.println(book.getId() + "," + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
                 }
                 System.out.println("Database updated successfully!");
             } catch (IOException e) {
