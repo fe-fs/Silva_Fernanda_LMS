@@ -21,7 +21,11 @@ import java.util.*;
  * and backup an old version of the file before doing new changes.
  */
 public class Library {
-    private ArrayList<Book> books;
+    private static ArrayList<Book> books;
+
+    public ArrayList<Book> getBooks() {
+        return books;
+    }
 
     /**
      * Constructor for the Library class.
@@ -85,11 +89,11 @@ public class Library {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] bookInfo = line.split(",");
+                int id = Integer.parseInt(bookInfo[0].trim());
+                String title = bookInfo[1].trim();
+                String author = bookInfo[2].trim();
+                String barcode = bookInfo.length > 3 ? bookInfo[3].trim() : "default_barcode";
 
-                int id = Integer.parseInt(bookInfo[0]);
-                String title = bookInfo[1];
-                String author = bookInfo[2];
-                String barcode = bookInfo.length > 3 ? bookInfo[3] : "default_barcode";
                 books.add(new Book(id, title, author, barcode)); // Modified to include barcode
             }
             scanner.close();
@@ -132,7 +136,7 @@ public class Library {
         try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
             for (Book book : books) {
                 String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                writer.println(book.getId() + "," + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate); // Modified to include dueDate
+                writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate); // Modified to include dueDate
             }
             System.out.println("Book added successfully!");
         } catch (IOException e) {
@@ -273,7 +277,7 @@ public class Library {
         try (PrintWriter out = new PrintWriter(filename)) {
             for (Book book : books) {
                 String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                out.println(book.getId() + "," + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate);
+                out.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate);
             }
         }
     }
@@ -325,6 +329,7 @@ public class Library {
         }
     }
 
+
     /**
      * Method name: checkoutBook
      * This method checks out a book from the library's collection using its title.
@@ -358,7 +363,7 @@ public class Library {
             try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
                 for (Book book : books) {
                     String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                    writer.println(book.getId() + ", " + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
+                    writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
                 }
                 System.out.println("Database updated successfully!");
             } catch (IOException e) {
@@ -407,7 +412,7 @@ public class Library {
             try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
                 for (Book book : books) {
                     String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                    writer.println(book.getId() + "," + book.getTitle() + ", " + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
+                    writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
                 }
                 System.out.println("Database updated successfully!");
             } catch (IOException e) {
@@ -424,7 +429,7 @@ public class Library {
      * @param Books_Database The path to the text file where the updated book information will be saved.
      * @throws IOException If an input or output exception occurred
      */
-    public void reorganizeIDs(String Books_Database) throws IOException {
+    public static void reorganizeIDs(String Books_Database) throws IOException {
         // Sort the books by ID
         Collections.sort(books, Comparator.comparingInt(Book::getId));
 
@@ -451,7 +456,7 @@ public class Library {
      * @param Books_Database The path to the text file where the updated book information will be saved.
      * @throws IOException If an input or output exception occurred
      */
-    public void fillIDGaps(String Books_Database) throws IOException {
+    public static void fillIDGaps(String Books_Database) throws IOException {
         // Sort the books by ID
         Collections.sort(books, Comparator.comparingInt(Book::getId));
 
