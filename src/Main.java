@@ -68,7 +68,7 @@ public class Main {
                     //Remove Books By ID
                     System.out.println("Write the id of the book to be removed:\n");
                     int id = scanner.nextInt();
-                    library.removeBook(id);
+                    library.removeBookID(id, Path_to_Database.databaseBackup);
                     System.out.println("\n\nDatabase backup - Backup_Books_Database.txt create...\n saving new database...");
 
                     //create this thread to make a little pause for the user know that a Backup exists for their database

@@ -150,7 +150,7 @@ public class Library {
      * @param id The ID number of the book to be removed.
      * @throws IOException If an input or output exception occurred
      */
-    public void removeBook(int id) throws IOException {
+   /* public void removeBook(int id) throws IOException {
         // Backup the original database
         backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
 
@@ -161,6 +161,22 @@ public class Library {
 
             // Update the original database   ---- NEEDS to make a correction to the id after removed, if continue with this project!
             updateDatabase(Path_to_Database.database);
+        } else {
+            System.out.println("Book ID: " + id +  " not found");
+        }
+    }*/
+
+    public void removeBookID(int id, String Books_Database) throws IOException {
+        // Backup the original database
+        backupDatabase(Books_Database, Path_to_Database.databaseBackup);
+
+        int index = binarySearch(id, 0, books.size()-1);
+        if (index !=-1){
+            System.out.println("Book ID!" + id + " removed!");
+            books.remove(index);
+
+            // Update the original database
+            updateDatabase(Books_Database);
         } else {
             System.out.println("Book ID: " + id +  " not found");
         }
