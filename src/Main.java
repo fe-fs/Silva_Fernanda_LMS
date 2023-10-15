@@ -57,11 +57,11 @@ public class Main {
                     //Add Books from File Books_Database.txt
                     library.addBookToFile(Path_to_Database.database);
                     library.loadBooksFromFile(Path_to_Database.database);
-                    library.listBooks();
+                    library.listBooks(Path_to_Database.database);
                     break;
                 case 2:
                     //List Books
-                    library.listBooks();
+                    library.listBooks(Path_to_Database.database);
                     break;
 
                 case 3:
@@ -77,7 +77,7 @@ public class Main {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    library.listBooks();
+                    library.listBooks(Path_to_Database.database);
 
                     break;
 
@@ -94,7 +94,7 @@ public class Main {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    library.listBooks();
+                    library.listBooks(Path_to_Database.database);
 
                     break;
 
@@ -104,7 +104,7 @@ public class Main {
                     String title = scanner.nextLine();
                     // Remove the book with the given title
                     library.removeBookByTitle(title);
-                    library.listBooks();
+                    library.listBooks(Path_to_Database.database);
                     break;
 
                 case 6:
@@ -124,7 +124,7 @@ public class Main {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    library.listBooks();
+                    library.listBooks(Path_to_Database.database);
                     break;
 
                 case 7:
@@ -144,7 +144,7 @@ public class Main {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    library.listBooks();
+                    library.listBooks(Path_to_Database.database);
                     break;
 
                 case 8:

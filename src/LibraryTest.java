@@ -58,20 +58,23 @@ class LibraryTest {
 
 
         @Test
-        void loadBooksFromFileTest() {
+        void testLoadBooksFromFile() {
+            System.out.println("Test loadBooksFromFile method");
             // Verify that the books were loaded correctly
             assertEquals(2, library.getBooks().size());
 
             //print list
-            List<Book> books = library.getBooks();
-            for (Book book : books) {
-                System.out.println(book);
-            }
+            library.listBooks(BooksTest_Database);
         }
 
 
         @Test
         void testAddBookToFile() throws IOException {
+            System.out.println("loadBooksFromFile method Test");
+            System.out.println("Before remove List:");
+            library.listBooks(BooksTest_Database);
+            System.out.print("\n");
+
             // Arrange
             String title = "The Great Gatsby";
             String author = "F. Scott Fitzgerald";
@@ -98,10 +101,9 @@ class LibraryTest {
             assertEquals(expectedBook.getBarcode(), actualBook.getBarcode());
 
             //print list
-            List<Book> books = library.getBooks();
-            for (Book book : books) {
-                System.out.println(book);
-            }
+            System.out.print("\n");
+            System.out.println("After remove List:");
+            library.listBooks(BooksTest_Database);
         }
 
 
@@ -117,11 +119,8 @@ class LibraryTest {
         @Test
         void testRemoveBookID() throws IOException {
             //print list
-            List<Book> books = library.getBooks();
             System.out.println("Before remove List:");
-            for (Book book : books) {
-                System.out.println(book);
-            }
+            library.listBooks(BooksTest_Database);
             System.out.print("\n");
 
             // Get the book to be removed
@@ -138,22 +137,18 @@ class LibraryTest {
             boolean isRemoved = library.getBooks().stream().noneMatch(book -> book.getId() == removedBookId);
             assertTrue(isRemoved, "The book was not removed successfully");
 
-            System.out.print("\n");
+
             //print list
+            System.out.print("\n");
             System.out.println("After remove List:");
-            for (Book book : books) {
-                System.out.println(book);
-            }
+            library.listBooks(BooksTest_Database);
         }
 
         @Test
         void testRemoveBookBarcode() throws IOException {
             // Print list
-            List<Book> books = library.getBooks();
             System.out.println("Before remove List:");
-            for (Book book : books) {
-                System.out.println(book);
-            }
+            library.listBooks(BooksTest_Database);
             System.out.print("\n");
 
             // Set the barcode of the book to be removed
@@ -169,32 +164,111 @@ class LibraryTest {
             boolean isRemoved = library.getBooks().stream().noneMatch(book -> book.getBarcode().equals(removedBookBarcode));
             assertTrue(isRemoved, "The book was not removed successfully");
 
+
+            //print list
             System.out.print("\n");
-            // Print list
             System.out.println("After remove List:");
-            for (Book book : books) {
-                System.out.println(book);
-            }
+            library.listBooks(BooksTest_Database);
         }
 
 
-
-/*
     @Test
-    void removeBookBarcode() {
+    void testRemoveBookByTitle() throws IOException {
+        // Print list
+        List<Book> books = library.getBooks();
+        System.out.println("Before remove List:");
+        for (Book book : books) {
+            System.out.println(book);
+        }
+        System.out.print("\n");
+
+        // Get the book to be removed
+        String titleToRemove = library.getBooks().get(0).getTitle();
+
+        // Act
+        library.removeBookByTitle(titleToRemove);
+
+        // Assert
+        boolean isRemoved = library.getBooks().stream().noneMatch(book -> book.getTitle().equals(titleToRemove));
+        assertTrue(isRemoved, "The book was not removed successfully");
+
+        System.out.print("\n");
+        // Print list
+        System.out.println("After remove List:");
+        for (Book book : books) {
+            System.out.println(book);
+        }
     }
 
     @Test
-    void removeBookByTitle() {
+    void testCheckoutBook() throws IOException {
+        // Print list
+        List<Book> books = library.getBooks();
+        System.out.println("Before checkout List:");
+        for (Book book : books) {
+            System.out.println(book);
+        }
+        System.out.print("\n");
+
+        // Get the book to be checked out
+        String titleToCheckout = library.getBooks().get(1).getTitle();
+
+        // Act
+        boolean isCheckoutSuccessful = library.checkoutBook(titleToCheckout, tempFile.getPath());
+
+        // Assert
+        assertTrue(isCheckoutSuccessful, "The book was not checked out successfully");
+
+        // Load the books from the file again
+        library.loadBooksFromFile(tempFile.getPath());
+
+        // Assert that the book is checked out
+        Book checkedOutBook = library.getBooks().stream().filter(book -> book.getTitle().equals(titleToCheckout)).findFirst().orElse(null);
+        assertNotNull(checkedOutBook, "The book was not found after checkout");
+        assertEquals("checkedOut", checkedOutBook.getCheckStatus(), "The book's check status is not 'checkedOut'");
+
+        System.out.print("\n");
+        // Print list
+        System.out.println("After checkout List:");
+        for (Book book : books) {
+            System.out.println(book);
+        }
     }
 
     @Test
-    void checkoutBook() {
+    void testCheckInBook() throws IOException {
+        // Print list
+        List<Book> books = library.getBooks();
+        System.out.println("Before check-in List:");
+        for (Book book : books) {
+            System.out.println(book);
+        }
+        System.out.print("\n");
+
+        // Get the book to be checked in
+        String titleToCheckIn = library.getBooks().get(0).getTitle();
+
+        // Act
+        boolean isCheckInSuccessful = library.checkInBook(titleToCheckIn, tempFile.getPath());
+
+        // Assert
+        assertTrue(isCheckInSuccessful, "The book was not checked in successfully");
+
+        // Load the books from the file again
+        library.loadBooksFromFile(tempFile.getPath());
+
+        // Assert that the book is checked in
+        Book checkedInBook = library.getBooks().stream().filter(book -> book.getTitle().equals(titleToCheckIn)).findFirst().orElse(null);
+        assertNotNull(checkedInBook, "The book was not found after check-in");
+        assertEquals("checkedIn", checkedInBook.getCheckStatus(), "The book's check status is not 'checkedIn'");
+
+        System.out.print("\n");
+        // Print list
+        System.out.println("After check-in List:");
+        for (Book book : books) {
+            System.out.println(book);
+        }
     }
 
-    @Test
-    void checkInBook() {
-    }
 
-*/
     }

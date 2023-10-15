@@ -57,7 +57,7 @@ public class Library {
                 String author = bookInfo[2];
                 String barcode = bookInfo.length > 3 ? bookInfo[3] : "default_barcode";
                 LocalDate dueDate = !bookInfo[4].trim().equals("null") ? LocalDate.parse(bookInfo[4].trim()) : null;
-                String checkStatus = bookInfo.length > 5 && !bookInfo[5].trim().equals("null") ? bookInfo[5].trim() : "checkedIn";
+                String checkStatus = (dueDate != null) ? "checkedOut" : "checkedIn";
 
                 Book book = new Book(id, title, author, barcode);
                 book.setDueDate(dueDate);
@@ -323,11 +323,11 @@ public class Library {
      * Method name: listBooks
      * This method lists all books currently in the library's collection.
      */
-    public void listBooks(){
+    public void listBooks(String filePath){
         // Reorganize IDs before listing books
         try {
-            reorganizeIDs("Books_Database.txt");
-            fillIDGaps(Path_to_Database.database);
+            reorganizeIDs(filePath);
+            fillIDGaps(filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -481,7 +481,7 @@ public class Library {
         for (Book book : books) {
             book.setId(expectedID++);
         }
-        System.out.println("ID reassigned!");
+        //System.out.println("ID reassigned!");
 
         // Save the updated list of books to the text file
         try {
