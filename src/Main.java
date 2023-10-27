@@ -12,6 +12,7 @@
  * The text file used to add new books should be formatted as follows: each line represents a book, and the id, title, and author are separated by a comma.
  */
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -27,6 +28,12 @@ public class Main {
      * @throws IOException If an input or output exception occurred
      */
     public static void main(String[] args) throws IOException {
+
+        //Call GUI
+
+
+
+
         Library library = new Library();
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
