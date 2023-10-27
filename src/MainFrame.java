@@ -1,10 +1,13 @@
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class MainFrame {
-    public static void main(String[] args) {
+    private RoundedButton button;
+
+    public void setupGUI(Library library) throws IOException {
         JFrame frame = new JFrame("Custom GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setBackground(Color.decode("#dbd0d6"));
@@ -22,7 +25,7 @@ public class MainFrame {
 
         JLabel title = new JLabel("Library Management System");
         title.setFont(new Font("Arial", Font.BOLD, 32)); // Set font to Arial and size to 32
-        title.setForeground(Color.decode("#ede6ea")); // Set color to #ede6ea
+        title.setForeground(Color.decode("#b8a9b3")); // Set color to #ede6ea
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(title);
 
@@ -31,87 +34,71 @@ public class MainFrame {
         spacer1.setPreferredSize(new Dimension(0, 20)); // Set preferred height to 100 pixels
         panel.add(spacer1);
 
+        // Create a JTextArea for the book list
+        JTextArea bookListArea = new JTextArea(5, 10);
+        bookListArea.setEditable(false);  // Make it read-only
+        bookListArea.setOpaque(false);    // Make it non-opaque
+        // Set the font to Arial, bold, and 18pt
+        bookListArea.setFont(new Font("Arial", Font.BOLD, 15));
+        // Set the font color to white
+        bookListArea.setForeground(Color.WHITE);
+        // Set the margin to 5
+        bookListArea.setMargin(new Insets(5, 5, 5, 5));
+
+        // Create a JScrollPane with no border and pink background
+        JScrollPane scrollPane = new JScrollPane(bookListArea);
+        scrollPane.setBackground(Color.decode("#b8a9b3"));
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        panel.add(scrollPane);
+
+
         // Create a panel for the buttons with a FlowLayout
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20)); // Set horizontal gap to 20 pixels
         buttonPanel.setBackground(Color.decode("#dbd0d6")); // Set background color to #dbd0d6
         buttonPanel.setBorder(BorderFactory.createEmptyBorder());
 
-        for (int i = 0; i < 8; i++) {
-            RoundedButton button = new RoundedButton("Button " + (i + 1));
-            button.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the button square
-            button.setMaximumSize(new Dimension(120, 120));
-            button.setBackground(Color.decode("#ede6ea"));
-            button.setBorder(BorderFactory.createEmptyBorder());
-            buttonPanel.add(button); // Add the button to the button panel
-        }
+        //Button1
+        RoundedButton buttonAddBooks = new RoundedButton("Add Books");
+        buttonAddBooks.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
+        buttonAddBooks.setMaximumSize(new Dimension(120, 120));
+        buttonAddBooks.setFont(new Font("Arial", Font.BOLD, 18)); // Set the font to Arial, bold, and 18pt
+        buttonAddBooks.setForeground(Color.decode("#b8a9b3"));
+        buttonAddBooks.setBackground(Color.decode("#ede6ea"));
+        buttonAddBooks.setBorder(BorderFactory.createEmptyBorder());
+        buttonPanel.add(buttonAddBooks); // Add the buttonListBooks to the buttonListBooks panel
 
-        panel.add(buttonPanel); // Add the button panel to the main panel
+        //Button2
+        RoundedButton buttonListBooks = new RoundedButton("List Books");
+        buttonListBooks.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
+        buttonListBooks.setMaximumSize(new Dimension(120, 120));
+        buttonListBooks.setFont(new Font("Arial", Font.BOLD, 18)); // Set the font to Arial, bold, and 18pt
+        buttonListBooks.setForeground(Color.decode("#b8a9b3"));
+        buttonListBooks.setBackground(Color.decode("#ede6ea"));
+        buttonListBooks.setBorder(BorderFactory.createEmptyBorder());
+        buttonPanel.add(buttonListBooks); // Add the buttonListBooks to the buttonListBooks panel
 
-       /* // Create a panel for the larger buttons with a FlowLayout
-        JPanel largeButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 40)); // Set horizontal gap to 20 pixels
-        largeButtonPanel.setBackground(Color.decode("#dbd0d6")); // Set background color to #dbd0d6
-        largeButtonPanel.setBorder(BorderFactory.createEmptyBorder());
-
-        for (int i = 0; i < 2; i++) {
-            RoundedButton button = new RoundedButton("Button " + (i + 1));
-            button.setPreferredSize(new Dimension(450, 50));
-            button.setMaximumSize(new Dimension(450, 50));
-            button.setBackground(Color.decode("#ede6ea"));
-            button.setBorder(BorderFactory.createEmptyBorder());
-            largeButtonPanel.add(button); // Add the button to the large button panel
-        }
-
-        panel.add(largeButtonPanel); // Add the large button panel to the main panel
-
-        */
+        panel.add(buttonPanel); // Add the buttonListBooks panel to the main panel
         frame.getContentPane().add(panel);
         frame.setVisible(true);
+
+
+
+        // Update the action listener for your buttonListBooks
+        buttonListBooks.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String bookList = library.listBooks(Path_to_Database.database);
+                bookListArea.setText(bookList);
+            }
+        });
+
+
     }
 
-    public static class RoundedButton extends JButton {
-        public RoundedButton(String label) {
-            super(label);
-
-            // These statements enlarge the button so that it
-            // becomes a circle rather than an oval.
-            Dimension size = getPreferredSize();
-            size.width = size.height = Math.max(size.width, size.height);
-            setPreferredSize(size);
-
-            // This call causes the JButton not to paint the background.
-            // This allows us to paint a round background.
-            setContentAreaFilled(false);
-        }
-
-        protected void paintComponent(Graphics g) {
-            if (getModel().isArmed()) {
-                // You might want to make the highlight color
-                // a property of the RoundedButton class.
-                g.setColor(Color.decode("#ede6ea"));
-            } else {
-                g.setColor(getBackground());
-            }
-            g.fillRoundRect(0, 0, getSize().width - 1, getSize().height - 1, 20, 20);
-
-            // This call will paint the label and the focus rectangle.
-            super.paintComponent(g);
-        }
-
-        protected void paintBorder(Graphics g) {
-            g.setColor(Color.decode("#ede6ea")); // Set color to #ede6ea
-            ((Graphics2D) g).setStroke(new BasicStroke(5)); // Set thickness to 5
-            g.drawRoundRect(0, 0, getSize().width - 1, getSize().height - 1, 20, 20);
-        }
-
-        // Hit detection.
-        Shape shape;
-
-        public boolean contains(int x, int y) {
-            // If the button has changed size, make a new shape object.
-            if (shape == null || !shape.getBounds().equals(getBounds())) {
-                shape = new Ellipse2D.Float(0, 0, getWidth(), getHeight());
-            }
-            return shape.contains(x, y);
-        }
+    // Getter method for your button
+    public RoundedButton getButton() {
+        return button;
     }
+
 }

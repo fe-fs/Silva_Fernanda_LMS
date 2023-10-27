@@ -142,6 +142,8 @@ public class Library {
         } catch (IOException e) {
             System.out.println("Error writing to file " + Books_Database);
         }
+        loadBooksFromFile(Path_to_Database.database);
+        listBooks(Path_to_Database.database);
     }
 
     /**
@@ -322,8 +324,11 @@ public class Library {
     /**
      * Method name: listBooks
      * This method lists all books currently in the library's collection.
+     *
+     * @return
      */
-    public void listBooks(String filePath){
+    public String listBooks(String filePath){
+        StringBuilder bookList = new StringBuilder();
         // Reorganize IDs before listing books
         try {
             reorganizeIDs(filePath);
@@ -331,7 +336,7 @@ public class Library {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //print books
+       /* //print books in terminal
         System.out.println("\n---------All Books in Database----------");
         for(Book book:books){
             System.out.println(book);
@@ -343,6 +348,21 @@ public class Library {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return filePath;*/
+
+        // Show in GUI
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line = reader.readLine();
+            while (line != null) {
+                bookList.append(line).append("\n");
+                line = reader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bookList.toString();
+
     }
 
 
