@@ -116,12 +116,12 @@ public class Library {
         }
     }
 
-    /**
+    /*
      * Method name: removeBook
      * This method removes a book from the library's collection using its ID number.
      * @param id The ID number of the book to be removed.
      * @throws IOException If an input or output exception occurred
-     */
+
 
     // modify the removeBookID method to return a String indicating whether the book was removed or not found, instead of printing directly to the console.
     public String removeBookID(int id, String Books_Database) throws IOException {
@@ -140,6 +140,7 @@ public class Library {
             return "Book ID: " + id +  " not found";
         }
     }
+    */
 
     /**
      * Method name: removeBookBarcode
@@ -149,7 +150,8 @@ public class Library {
      * @param isBarcode A boolean flag indicating whether the identifier is a barcode. If true, the identifier is treated as a barcode; if false, it's treated as an ID.
      * @throws IOException If an input or output exception occurred
      */
-    public void removeBookBarcode(String identifier, boolean isBarcode) throws IOException {
+    //GUI modified the removeBookBarcode method to return a String indicating whether the book was removed or not found, instead of printing directly to the console.
+    public String removeBookBarcode(String identifier, boolean isBarcode) throws IOException {
         // Backup the original database
         backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
 
@@ -174,8 +176,9 @@ public class Library {
 
             // Update the original database
             updateDatabase(Path_to_Database.database);
+            return "Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " removed!";
         } else {
-            System.out.println("Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " not found");
+            return "Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " not found";
         }
     }
 
@@ -184,7 +187,8 @@ public class Library {
      * This method removes a book from the library's collection by title, which is supplied by the user.
      * @param title The title of the book to be removed.
      */
-    public void removeBookByTitle(String title) {
+    //modified the removeBookByTitle method to return a String indicating whether the book was removed or not found, instead of printing directly to the console.
+    public String removeBookByTitle(String title) {
         // Sort the books by title for binary search
         Collections.sort(books, Comparator.comparing(Book::getTitle));
 
@@ -194,9 +198,9 @@ public class Library {
         // If the book is found, remove it from the collection
         if (index != -1) {
             books.remove(index);
-            System.out.println("The book with title " + title + " was successfully removed from the database.");
+            return "The book with title " + title + " was successfully removed from the database.";
         } else {
-            System.out.println("The book with title " + title + " was not found in the database.");
+            return "The book with title " + title + " was not found in the database.";
         }
     }
 

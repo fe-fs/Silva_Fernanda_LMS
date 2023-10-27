@@ -61,6 +61,8 @@ public class MainFrame {
         buttonPanel.setBackground(Color.decode("#dbd0d6")); // Set background color to #dbd0d6
         buttonPanel.setBorder(BorderFactory.createEmptyBorder());
 
+        //Buttons for the GUI
+
         //Button1
         RoundedButton buttonAddBooks = new RoundedButton("Add Books");
         buttonAddBooks.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
@@ -82,14 +84,24 @@ public class MainFrame {
         buttonPanel.add(buttonListBooks); // Add the buttonListBooks to the buttonListBooks panel
 
         //Button3
-        RoundedButton buttonRemoveBookID = new RoundedButton("Remove Book by ID");
-        buttonRemoveBookID.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
-        buttonRemoveBookID.setMaximumSize(new Dimension(120, 120));
-        buttonRemoveBookID.setFont(new Font("Arial", Font.BOLD, 15)); // Set the font to Arial, bold, and 18pt
-        buttonRemoveBookID.setForeground(Color.decode("#b8a9b3"));
-        buttonRemoveBookID.setBackground(Color.decode("#ede6ea"));
-        buttonRemoveBookID.setBorder(BorderFactory.createEmptyBorder());
-        buttonPanel.add(buttonRemoveBookID); // Add the buttonListBooks to the buttonListBooks panel
+        RoundedButton buttonRemoveBookBarcode = new RoundedButton("<html>Remove Book<br>ID or Barcode</html>");
+        buttonRemoveBookBarcode.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
+        buttonRemoveBookBarcode.setMaximumSize(new Dimension(120, 120));
+        buttonRemoveBookBarcode.setFont(new Font("Arial", Font.BOLD, 15)); // Set the font to Arial, bold, and 18pt
+        buttonRemoveBookBarcode.setForeground(Color.decode("#b8a9b3"));
+        buttonRemoveBookBarcode.setBackground(Color.decode("#ede6ea"));
+        buttonRemoveBookBarcode.setBorder(BorderFactory.createEmptyBorder());
+        buttonPanel.add(buttonRemoveBookBarcode); // Add the buttonListBooks to the buttonListBooks panel
+
+        //Button4
+        RoundedButton buttonRemoveBookTitle = new RoundedButton("<html>Remove Book<br>by Title</html>");
+        buttonRemoveBookTitle.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
+        buttonRemoveBookTitle.setMaximumSize(new Dimension(120, 120));
+        buttonRemoveBookTitle.setFont(new Font("Arial", Font.BOLD, 15)); // Set the font to Arial, bold, and 18pt
+        buttonRemoveBookTitle.setForeground(Color.decode("#b8a9b3"));
+        buttonRemoveBookTitle.setBackground(Color.decode("#ede6ea"));
+        buttonRemoveBookTitle.setBorder(BorderFactory.createEmptyBorder());
+        buttonPanel.add(buttonRemoveBookTitle); // Add the buttonListBooks to the buttonListBooks panel
 
         panel.add(buttonPanel); // Add the buttonListBooks panel to the main panel
         frame.getContentPane().add(panel);
@@ -97,7 +109,9 @@ public class MainFrame {
 
 
 
-        // Update the action listener for your buttonListBooks
+        // Action Listeners to connect each button to the correct methods
+
+        //Button1
         buttonListBooks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -106,6 +120,7 @@ public class MainFrame {
             }
         });
 
+        //Button2
         buttonAddBooks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -137,16 +152,19 @@ public class MainFrame {
             }
         });
 
-        buttonRemoveBookID.addActionListener(new ActionListener() {
+        //Button3
+        buttonRemoveBookBarcode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Show input dialog for the book ID
-                String idStr = JOptionPane.showInputDialog(frame, "Enter the ID of the book to remove:");
-                int id = Integer.parseInt(idStr);
+                // Show input dialog for the book ID or barcode
+                String identifier = JOptionPane.showInputDialog(frame, "Enter the ID or barcode of the book to remove:");
 
-                // Call the removeBookID method
+                // Determine whether the identifier is a barcode or an ID
+                boolean isBarcode = identifier.matches("[\\w]{8}");
+
+                // Call the removeBookBarcode method
                 try {
-                    String result = library.removeBookID(id, Path_to_Database.database);
+                    String result = library.removeBookBarcode(identifier, isBarcode);
                     // Show message dialog with the result
                     JOptionPane.showMessageDialog(frame, result);
                 } catch (IOException ex) {
@@ -159,7 +177,23 @@ public class MainFrame {
             }
         });
 
+        //Button4
+        buttonRemoveBookTitle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Show input dialog for the book title
+                String title = JOptionPane.showInputDialog(frame, "Enter the title of the book to remove:");
 
+                // Call the removeBookByTitle method
+                String result = library.removeBookByTitle(title);
+                // Show message dialog with the result
+                JOptionPane.showMessageDialog(frame, result);
+
+                // Update the book list in your GUI
+                String books = library.listBooks(Path_to_Database.database);
+                bookListArea.setText(books);
+            }
+        });
     }
 
     // Getter method for your button
