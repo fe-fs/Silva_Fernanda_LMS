@@ -103,6 +103,26 @@ public class MainFrame {
         buttonRemoveBookTitle.setBorder(BorderFactory.createEmptyBorder());
         buttonPanel.add(buttonRemoveBookTitle); // Add the buttonListBooks to the buttonListBooks panel
 
+        //Button5
+        RoundedButton buttonCheckoutBook = new RoundedButton("<html>Checkout<br>Book</html>");
+        buttonCheckoutBook.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
+        buttonCheckoutBook.setMaximumSize(new Dimension(120, 120));
+        buttonCheckoutBook.setFont(new Font("Arial", Font.BOLD, 15)); // Set the font to Arial, bold, and 18pt
+        buttonCheckoutBook.setForeground(Color.decode("#b8a9b3"));
+        buttonCheckoutBook.setBackground(Color.decode("#ede6ea"));
+        buttonCheckoutBook.setBorder(BorderFactory.createEmptyBorder());
+        buttonPanel.add(buttonCheckoutBook); // Add the buttonListBooks to the buttonListBooks panel
+
+        //Button6
+        RoundedButton buttonCheckInBook = new RoundedButton("<html>Checkout<br>Book</html>");
+        buttonCheckInBook.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
+        buttonCheckInBook.setMaximumSize(new Dimension(120, 120));
+        buttonCheckInBook.setFont(new Font("Arial", Font.BOLD, 15)); // Set the font to Arial, bold, and 18pt
+        buttonCheckInBook.setForeground(Color.decode("#b8a9b3"));
+        buttonCheckInBook.setBackground(Color.decode("#ede6ea"));
+        buttonCheckInBook.setBorder(BorderFactory.createEmptyBorder());
+        buttonPanel.add(buttonCheckInBook); // Add the buttonListBooks to the buttonListBooks panel
+
         panel.add(buttonPanel); // Add the buttonListBooks panel to the main panel
         frame.getContentPane().add(panel);
         frame.setVisible(true);
@@ -186,6 +206,47 @@ public class MainFrame {
 
                 // Call the removeBookByTitle method
                 String result = library.removeBookByTitle(title);
+                // Show message dialog with the result
+                JOptionPane.showMessageDialog(frame, result);
+
+                // Update the book list in your GUI
+                String books = library.listBooks(Path_to_Database.database);
+                bookListArea.setText(books);
+            }
+        });
+
+        //Button5
+        buttonCheckoutBook.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Show input dialog for the book title
+                String title = JOptionPane.showInputDialog(frame, "Enter the title of the book to checkout:");
+
+                // Call the checkoutBook method
+                String result = library.checkoutBook(title, Path_to_Database.database);
+                // Show message dialog with the result
+                JOptionPane.showMessageDialog(frame, result);
+
+                // Update the book list in your GUI
+                String books = library.listBooks(Path_to_Database.database);
+                bookListArea.setText(books);
+            }
+        });
+
+        //Button6
+        buttonCheckInBook.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Show input dialog for the book title
+                String title = JOptionPane.showInputDialog(frame, "Enter the title of the book to checkIn:");
+
+                // Call the checkoutBook method
+                String result = null;
+                try {
+                    result = library.checkInBook(title, Path_to_Database.database);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 // Show message dialog with the result
                 JOptionPane.showMessageDialog(frame, result);
 

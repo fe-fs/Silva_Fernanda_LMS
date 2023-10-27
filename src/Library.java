@@ -336,7 +336,7 @@ public class Library {
      * @param title The title of the book to be checked out.
      * @return boolean Returns true if the book was successfully checked out, false otherwise.
      */
-    public boolean checkoutBook(String title, String Books_Database) {
+    public String checkoutBook(String title, String Books_Database) {
         Book bookToCheckout = null;
         for (Book book : books) {
             if (book.getTitle().equals(title)) {
@@ -346,15 +346,12 @@ public class Library {
         }
 
         if (bookToCheckout == null) {
-            System.out.println("Book not found in the library.");
-            return false;
+            return "Book not found in the library.";
         } else if ("checkedOut".equals(bookToCheckout.getCheckStatus())) {
-            System.out.println("Book is already checked out.");
-            return false;
+            return "Book is already checked out.";
         } else {
             bookToCheckout.setCheckStatus("checkedOut");
             bookToCheckout.setDueDate(LocalDate.now().plus(4, ChronoUnit.WEEKS));
-            System.out.println("Book checked out. Due date is in 4 weeks: " + bookToCheckout.getDueDate());
 
             // Save updated list of books to text file
             try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
@@ -362,12 +359,11 @@ public class Library {
                     String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
                     writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
                 }
-                System.out.println("Database updated successfully!");
             } catch (IOException e) {
-                System.out.println("Error writing to file " + Books_Database);
+                return "Error writing to file " + Books_Database;
             }
 
-            return true;
+            return "Book checked out. Due date is in 4 weeks: " + bookToCheckout.getDueDate();
         }
     }
 
@@ -382,7 +378,7 @@ public class Library {
      * @return boolean Returns true if the book was successfully checked in, false otherwise.
      * @throws IOException If an input or output exception occurred
      */
-    public boolean checkInBook(String title, String Books_Database) throws IOException {
+    public String checkInBook(String title, String Books_Database) throws IOException {
         Book bookToCheckIn = null;
         for (Book book : books) {
             if (book.getTitle().equals(title)) {
@@ -392,18 +388,15 @@ public class Library {
         }
 
         if (bookToCheckIn == null) {
-            System.out.println("Book not found in the library.");
-            return false;
+            return "Book not found in the library.";
         } else if (!"checkedOut".equals(bookToCheckIn.getCheckStatus())) {
-            System.out.println("This book was not checked out.");
-            return false;
+            return "This book was not checked out.";
         } else {
             bookToCheckIn.setCheckStatus("checkedIn");
             if (bookToCheckIn.getDueDate().isBefore(LocalDate.now())) {
-                System.out.println("The due date for this book has passed. There is a fine of $5 to be paid at the library front.");
+               return "The due date for this book has passed. There is a fine of $5 to be paid at the library front.";
             }
             bookToCheckIn.setDueDate(null);
-            System.out.println("Book checked in successfully.");
 
             // Save updated list of books to text file
             try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
@@ -415,8 +408,7 @@ public class Library {
             } catch (IOException e) {
                 System.out.println("Error writing to file " + Books_Database);
             }
-
-            return true;
+            return "Book checked in successfully.";
         }
     }
 
