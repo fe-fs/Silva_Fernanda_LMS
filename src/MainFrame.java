@@ -14,7 +14,8 @@ public class MainFrame {
         JFrame frame = new JFrame("Custom GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setBackground(Color.decode("#dbd0d6"));
-        frame.setSize(600, 600); // Set the size of the JFrame
+        frame.setSize(600, 800); // Set the size of the JFrame
+        frame.setLocationRelativeTo(null); // This will center the JFrame
 
         // Create a margin between the panel and the frame
         ((JComponent) frame.getContentPane()).setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -114,7 +115,7 @@ public class MainFrame {
         buttonPanel.add(buttonCheckoutBook); // Add the buttonListBooks to the buttonListBooks panel
 
         //Button6
-        RoundedButton buttonCheckInBook = new RoundedButton("<html>Checkout<br>Book</html>");
+        RoundedButton buttonCheckInBook = new RoundedButton("<html>CheckIn<br>Book</html>");
         buttonCheckInBook.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
         buttonCheckInBook.setMaximumSize(new Dimension(120, 120));
         buttonCheckInBook.setFont(new Font("Arial", Font.BOLD, 15)); // Set the font to Arial, bold, and 18pt
