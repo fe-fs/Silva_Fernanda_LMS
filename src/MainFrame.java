@@ -6,6 +6,9 @@ import java.io.IOException;
 
 public class MainFrame {
     private RoundedButton button;
+    private TextComponent titleTextField;
+    private TextComponent authorTextField;
+    private TextComponent barcodeTextField;
 
     public void setupGUI(Library library) throws IOException {
         JFrame frame = new JFrame("Custom GUI");
@@ -90,6 +93,37 @@ public class MainFrame {
             public void actionPerformed(ActionEvent e) {
                 String bookList = library.listBooks(Path_to_Database.database);
                 bookListArea.setText(bookList);
+            }
+        });
+
+        buttonAddBooks.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Show input dialogs for the book details
+                String title = JOptionPane.showInputDialog(frame, "Enter the title of the book:");
+                String author = JOptionPane.showInputDialog(frame, "Enter the author of the book:");
+                String barcode;
+                while (true) {
+                    barcode = JOptionPane.showInputDialog(frame, "Enter a barcode sequence of 8 characters without spaces or special characters:");
+                    if (!barcode.matches("[\\w]{8}")) { // Checks if barcode is exactly 8 alphanumeric characters
+                        JOptionPane.showMessageDialog(frame, "Invalid barcode. Please try again.");
+                    } else {
+                        break;
+                    }
+                }
+
+                // Call the addBookToFile method
+                try {
+                    library.addBookToFile(Path_to_Database.database, title, author, barcode);
+                    library.loadBooksFromFile(Path_to_Database.database);
+                    library.listBooks(Path_to_Database.database);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                // Update the book list in your GUI
+                String books = library.listBooks(Path_to_Database.database);
+                bookListArea.setText(books);
             }
         });
 

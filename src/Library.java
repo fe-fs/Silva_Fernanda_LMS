@@ -75,10 +75,11 @@ public class Library {
     /**
      * Method name: addBookToFile
      * This method adds a new book to the library's collection and saves it to a text file.
+     *
      * @param Books_Database The path to the text file where the new book will be saved.
      * @throws IOException If an input or output exception occurred
      */
-    public void addBookToFile(String Books_Database) throws IOException {
+    public void addBookToFile(String Books_Database, String title, String author, String barcode) throws IOException {
         // Backup the original database
         backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
 
@@ -90,11 +91,7 @@ public class Library {
                 String line = scanner.nextLine();
                 String[] bookInfo = line.split(",");
                 int id = Integer.parseInt(bookInfo[0].trim());
-                String title = bookInfo[1].trim();
-                String author = bookInfo[2].trim();
-                String barcode = bookInfo.length > 3 ? bookInfo[3].trim() : "default_barcode";
-
-                books.add(new Book(id, title, author, barcode)); // Modified to include barcode
+                books.add(new Book(id, bookInfo[1].trim(), bookInfo[2].trim(), bookInfo.length > 3 ? bookInfo[3].trim() : "default_barcode")); // Modified to include barcode
             }
             scanner.close();
         } catch (FileNotFoundException e) {
@@ -104,35 +101,10 @@ public class Library {
         // Generate a new ID by checking the .txt file for existing ID numbers and continuing from the last ID saved on it
         int newId = books.stream().mapToInt(Book::getId).max().orElse(0) + 1;
 
-        // Prompt the user to enter the name of the book and the author
-        Scanner inputScanner = new Scanner(System.in);
-        System.out.print("Enter the title of the book: ");
-        String title = inputScanner.nextLine();
-        System.out.print("Enter the author of the book: ");
-        String author = inputScanner.nextLine();
-
-        //Prompt the user to enter a valid barcode
-        String barcode;
-        while (true) {
-            System.out.print("Enter a barcode sequence of 8 characters without spaces or special characters: ");
-            barcode = inputScanner.nextLine();
-            if (!barcode.matches("[\\w]{8}")) { // Checks if barcode is exactly 8 alphanumeric characters
-                System.out.println("Invalid barcode. Please try again.");
-            } else {
-                final String finalBarcode = barcode;
-                boolean barcodeExists = books.stream().anyMatch(book -> book.getBarcode().equals(finalBarcode));
-                if (barcodeExists) {
-                    System.out.println("A book with this barcode already exists. Please try again with a different barcode.");
-                } else {
-                    break;
-                }
-            }
-        }
-
-// Add new book to list
+        // Add new book to list -- Version for GUI -- modified it to take the book details as parameters instead of reading them from the console.
         books.add(new Book(newId, title, author, barcode)); // Modified to include barcode
 
-// Save updated list of books to text file
+        // Save updated list of books to text file
         try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
             for (Book book : books) {
                 String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
@@ -142,8 +114,6 @@ public class Library {
         } catch (IOException e) {
             System.out.println("Error writing to file " + Books_Database);
         }
-        loadBooksFromFile(Path_to_Database.database);
-        listBooks(Path_to_Database.database);
     }
 
     /**

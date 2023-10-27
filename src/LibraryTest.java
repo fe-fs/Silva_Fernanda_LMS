@@ -127,7 +127,7 @@ class LibraryTest {
             System.setIn(in);
 
             // Act
-            library.addBookToFile(tempFile.getPath()); // Changed to call the correct method
+            library.addBookToFile(Path_to_Database.database, title, author, barcode); // Changed to call the correct method
 
             // Load the books from the file
             library.loadBooksFromFile(tempFile.getPath());
