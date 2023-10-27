@@ -2,9 +2,7 @@
 2,The Great Gatsby,F. Scott Fitzgerald,34567890,null
 3,Moby Dick,Herman Melville,45678901,null
 4,War and Peace,Leo Tolstoy,56789012,null
-5,Ulysses,James Joyce,67890123,null
-6,Don Quixote,Miguel de Cervantes,78901234,null
-7,The Odyssey,Homer,89012345,null
-8,Crime and Punishment,Fyodor Dostoevsky,90123456,null
-9,Madame Bovary,Gustave Flaubert,01234567,null
-10,teste,er,12345678,null
+5,Don Quixote,Miguel de Cervantes,78901234,null
+6,The Odyssey,Homer,89012345,null
+7,Crime and Punishment,Fyodor Dostoevsky,90123456,null
+8,Madame Bovary,Gustave Flaubert,01234567,null

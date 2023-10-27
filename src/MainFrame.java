@@ -81,6 +81,16 @@ public class MainFrame {
         buttonListBooks.setBorder(BorderFactory.createEmptyBorder());
         buttonPanel.add(buttonListBooks); // Add the buttonListBooks to the buttonListBooks panel
 
+        //Button3
+        RoundedButton buttonRemoveBookID = new RoundedButton("Remove Book by ID");
+        buttonRemoveBookID.setPreferredSize(new Dimension(120, 120)); // Set width and height to 200 to make the buttonListBooks square
+        buttonRemoveBookID.setMaximumSize(new Dimension(120, 120));
+        buttonRemoveBookID.setFont(new Font("Arial", Font.BOLD, 15)); // Set the font to Arial, bold, and 18pt
+        buttonRemoveBookID.setForeground(Color.decode("#b8a9b3"));
+        buttonRemoveBookID.setBackground(Color.decode("#ede6ea"));
+        buttonRemoveBookID.setBorder(BorderFactory.createEmptyBorder());
+        buttonPanel.add(buttonRemoveBookID); // Add the buttonListBooks to the buttonListBooks panel
+
         panel.add(buttonPanel); // Add the buttonListBooks panel to the main panel
         frame.getContentPane().add(panel);
         frame.setVisible(true);
@@ -117,6 +127,28 @@ public class MainFrame {
                     library.addBookToFile(Path_to_Database.database, title, author, barcode);
                     library.loadBooksFromFile(Path_to_Database.database);
                     library.listBooks(Path_to_Database.database);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                // Update the book list in your GUI
+                String books = library.listBooks(Path_to_Database.database);
+                bookListArea.setText(books);
+            }
+        });
+
+        buttonRemoveBookID.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Show input dialog for the book ID
+                String idStr = JOptionPane.showInputDialog(frame, "Enter the ID of the book to remove:");
+                int id = Integer.parseInt(idStr);
+
+                // Call the removeBookID method
+                try {
+                    String result = library.removeBookID(id, Path_to_Database.database);
+                    // Show message dialog with the result
+                    JOptionPane.showMessageDialog(frame, result);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
