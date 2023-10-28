@@ -13,7 +13,7 @@
  */
 
 import java.io.IOException;
-import java.util.Scanner;
+
 
 /**
  * Class name: Main
@@ -29,150 +29,17 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
 
-        Library library = new Library();
-        Scanner scanner = new Scanner(System.in);
-        boolean exit = false;
+        Library library = new Library(); // Create a new library object
 
         //Call GUI
-        MainFrame gui = new MainFrame();
+        MainFrame gui = new MainFrame(); // Create a new GUI object
         gui.setupGUI(library);  // Pass the library instance to setupGUI
-
-        // Get the button from the GUI
-        RoundedButton button = gui.getButton();
 
 
         //Loading last saved version
-        System.out.println("Loading last saved version file...\n");
-        library.loadBooksFromFile(Path_to_Database.database);
+        System.out.println("Loading last saved version file...\n"); // Print a message to indicate loading process
+        library.loadBooksFromFile(Path_to_Database.database); // Load books from the file specified by Path_to_Database.database
 
-
-        //menu
-
-       /* while (!exit) {
-            System.out.println("\n----------------- Library Management System -----------------\n");
-            System.out.printf("%-30s %-30s %n", "------ Management ------", "------ User ------");
-            System.out.printf("%-30s %-30s %n", "1. Add new Books to Database", "2. List books");
-            System.out.printf("%-30s %-30s %n", "2. List books", "6. CheckOut Books by title");
-            System.out.printf("%-30s %-30s %n", "3. Remove Books by ID", "7. CheckIn Books by title");
-            System.out.printf("%-30s %-30s %n", "4. Remove Books by Barcode", "");
-            System.out.printf("%-30s %-30s %n", "5. Remove Books by Title", "");
-            System.out.println("\n8. Exit");
-            System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();  // Consume newline left-over
-
-
-
-    }
-
-    //method to use the switch with the buttons from GUI
-    public static void handleButtonClick() throws IOException {
-        Library library = new Library();
-        Scanner scanner = new Scanner(System.in);
-        switch (n) {
-            case 1:
-                //Add Books from File Books_Database.txt
-                library.addBookToFile(Path_to_Database.database);
-                library.loadBooksFromFile(Path_to_Database.database);
-                library.listBooks(Path_to_Database.database);
-                break;
-            case 2:
-                //List Books
-                library.listBooks(Path_to_Database.database);
-                break;
-
-            case 3:
-                //Remove Books By ID
-                System.out.println("Write the id of the book to be removed:\n");
-                int id = scanner.nextInt();
-                library.removeBookID(id, Path_to_Database.databaseBackup);
-                System.out.println("\n\nDatabase backup - Backup_Books_Database.txt create...\n saving new database...");
-
-                //create this thread to make a little pause for the user know that a Backup exists for their database
-                try {
-                    Thread.sleep(2000); // Pause for 2000 milliseconds, or 2 seconds
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                library.listBooks(Path_to_Database.database);
-
-                break;
-
-            case 4:
-                //Remove Books BY Barcode
-                System.out.println("Write the Barcode of the book to be removed:\n");
-                String barcode = scanner.nextLine();
-                library.removeBookBarcode(barcode, true); // Pass the barcode to the removeBook method
-                System.out.println("\n\nDatabase backup - Backup_Books_Database.txt create...\n saving new database...");
-
-                //create this thread to make a little pause for the user know that a Backup exists for their database
-                try {
-                    Thread.sleep(2000); // Pause for 2000 milliseconds, or 2 seconds
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                library.listBooks(Path_to_Database.database);
-
-                break;
-
-            case 5:
-                // Remove books by title
-                System.out.println("Please enter the title of the book you want to remove:");
-                String title = scanner.nextLine();
-                // Remove the book with the given title
-                library.removeBookByTitle(title);
-                library.listBooks(Path_to_Database.database);
-                break;
-
-            case 6:
-                // Checkout a book
-                System.out.print("Enter the title of the book: ");
-                title = scanner.nextLine();
-                boolean successOut = library.checkoutBook(title, Path_to_Database.database);
-                if (successOut) {
-                    System.out.println("Successfully checked out " + title);
-                } else {
-                    System.out.println("Failed to check out " + title);
-                }
-
-                //create this thread to make a little pause for the user read
-                try {
-                    Thread.sleep(2000); // Pause for 2000 milliseconds, or 2 seconds
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                library.listBooks(Path_to_Database.database);
-                break;
-
-            case 7:
-                // CheckIn a book
-                System.out.print("Enter the title of the book: ");
-                title = scanner.nextLine();
-                boolean successIn = library.checkInBook(title, Path_to_Database.database);
-                if (successIn) {
-                    System.out.println("Successfully checked In " + title);
-                } else {
-                    System.out.println("Failed to checkIn " + title);
-                }
-
-                //create this thread to make a little pause for the user read
-                try {
-                    Thread.sleep(2000); // Pause for 2000 milliseconds, or 2 seconds
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                library.listBooks(Path_to_Database.database);
-                break;
-
-            case 8:
-                //exit
-                System.out.println("Exiting..." + "Byebye!\n");
-                boolean exit = true;
-                break;
-            default:
-                System.out.println("Invalid choice. Please try again.");
-        }
-
-        */
+        //removed menu and switch to work in terminal - will use only GUI from now on
     }
 }

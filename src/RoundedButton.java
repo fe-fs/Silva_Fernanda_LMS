@@ -1,8 +1,27 @@
+/*
+ * Library Management System
+ * Name: Fernanda Frederico Ribeiro da Silva
+ * Class: Software Development I CEN-3024C-16046
+ * Professor: Walauskis
+ */
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
+/**
+ * This class represents a custom JButton with a rounded shape.
+ * It extends the JButton class and overrides some of its methods to
+ * provide a rounded look and feel.
+ */
+
 public class RoundedButton extends JButton {
+
+    /**
+     * Constructs a new RoundedButton with the specified label.
+     *
+     * @param label the text of the button
+     */
     public RoundedButton(String label) {
         super(label);
 
@@ -17,6 +36,11 @@ public class RoundedButton extends JButton {
         setContentAreaFilled(false);
     }
 
+    /**
+     * Paints the component with a custom background color and shape.
+     *
+     * @param g the Graphics object to protect
+     */
     protected void paintComponent(Graphics g) {
         if (getModel().isArmed()) {
             // You might want to make the highlight color
@@ -31,17 +55,30 @@ public class RoundedButton extends JButton {
         super.paintComponent(g);
     }
 
+    /**
+     * Paints the border of the component with a custom color and thickness.
+     *
+     * @param g the Graphics object to protect
+     */
     protected void paintBorder(Graphics g) {
-        g.setColor(Color.decode("#ede6ea")); // Set color to #ede6ea
+        g.setColor(Color.decode("#ede6ea")); // Set color of button border (same as button to look clean)
         ((Graphics2D) g).setStroke(new BasicStroke(5)); // Set thickness to 5
         g.drawRoundRect(0, 0, getSize().width - 1, getSize().height - 1, 20, 20);
     }
 
-    // Hit detection.
+    // Click detection.
     Shape shape;
 
+    /**
+     * Determines whether a point is within this component's bounds.
+     *
+     * @param x the x-coordinate of the point to check
+     * @param y the y-coordinate of the point to check
+     * @return true if the point is within this component's bounds; false otherwise
+     */
     public boolean contains(int x, int y) {
-        // If the button has changed size, make a new shape object.
+        // this code ensures that whenever you check if a point is within the button,
+        // it always uses an up-to-date shape that matches the current size of the button
         if (shape == null || !shape.getBounds().equals(getBounds())) {
             shape = new Ellipse2D.Float(0, 0, getWidth(), getHeight());
         }
