@@ -168,7 +168,7 @@ public class MainFrame {
 
         // Action Listeners to connect each button to the correct methods in library class
 
-//Button1
+//Button1 - List Books
         buttonListBooks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -182,7 +182,7 @@ public class MainFrame {
             }
         });
 
-        //Button2
+        //Button2 - AddBooks
         buttonAddBooks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -218,7 +218,7 @@ public class MainFrame {
             }
         });
 
-        //Button3
+        //Button3 - RemoveBook Barcode/ID
         buttonRemoveBookBarcode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -248,7 +248,7 @@ public class MainFrame {
             }
         });
 
-        //Button4
+        //Button4 - RemoveBook Title
         buttonRemoveBookTitle.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -276,7 +276,7 @@ public class MainFrame {
             }
         });
 
-        //Button5
+        //Button5 - CheckoutBook
         buttonCheckoutBook.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -299,7 +299,7 @@ public class MainFrame {
         });
 
 
-        //Button6
+        //Button6 - CheckInBook
         buttonCheckInBook.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -321,7 +321,7 @@ public class MainFrame {
             }
         });
 
-        //button7
+        //button7 - Exit
         buttonExit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Perform exit operations here

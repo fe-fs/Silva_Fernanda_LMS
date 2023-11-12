@@ -1,6 +1,0 @@
-1,The Great Gatsby,F. Scott Fitzgerald,34567890,null
-2,Moby Dick,Herman Melville,45678901,null
-3,War and Peace,Leo Tolstoy,56789012,null
-4,Don Quixote,Miguel de Cervantes,78901234,null
-5,The Odyssey,Homer,89012345,null
-6,Crime and Punishment,Fyodor Dostoevsky,90123456,null

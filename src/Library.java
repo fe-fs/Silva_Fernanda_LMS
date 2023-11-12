@@ -6,10 +6,6 @@
  */
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -18,7 +14,7 @@ import java.util.*;
 /**
  * Class name: Library
  * This class represents a library and its collection of books.
- * It provides methods for loading books from a text file, adding new books to the collection, listing all books in the collection remove books from the file,
+ * It provides methods for loading books from a text file, adding new books to the collection, listing all books in the collection remove books from the database,
  * and backup an old version of the file before doing new changes.
  */
 public class Library {
@@ -117,7 +113,8 @@ public class Library {
      * This method removes a book from the library's collection using its ID or barcode.
      *
      * @param identifier The ID or barcode of the book to be removed.
-     * @param isBarcode A boolean flag indicating whether the identifier is a barcode. If true, the identifier is treated as a barcode; if false, it's treated as an ID.
+     * @param isBarcode A boolean flag indicating whether the identifier is a barcode.
+     *                  If true, the identifier is treated as a barcode; if false, it's treated as an ID.
      * @throws SQLException If a database access error occurred
      */
     public String removeBookBarcode(String identifier, boolean isBarcode) throws SQLException {
@@ -279,7 +276,8 @@ public class Library {
      * Method name: checkInBook
      * This method checks in a book to the library's collection using its title.
      * If the book is found and is checked out, it sets the book as checked in and removes the due date.
-     * If the due date has passed, it informs the user about a fine. It then prints a message indicating that the book was successfully checked in.
+     * If the due date has passed, it informs the user about a fine.
+     * It then prints a message indicating that the book was successfully checked in.
      *
      * @param title The title of the book to be checked in.
      *
