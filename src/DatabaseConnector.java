@@ -1,13 +1,18 @@
+/*
+ * Library Management System
+ * Name: Fernanda Frederico Ribeiro da Silva
+ * Class: Software Development I CEN-3024C-16046
+ * Professor: Walauskis
+ */
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
  * The DatabaseConnector class establishes a connection to a MySQL database.
- * <p>
  * This class contains a method to connect to the database using the JDBC driver.
  * The database URL, username, and password are specified as class variables.
- * <p>
+ *
  */
 public class DatabaseConnector {
 
