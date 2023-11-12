@@ -35,7 +35,7 @@ public class MainFrame {
         JFrame frame = new JFrame("Custom GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //means the application will be exited when the frame is closed.
         frame.getContentPane().setBackground(Color.decode("#dbd0d6"));//background color of the content pane of the frame
-        frame.setSize(650, 900); // Set the size of the JFrame
+        frame.setSize(650, 910); // Set the size of the JFrame
         frame.setLocationRelativeTo(null); // This will center the JFrame
 
         // Create a margin between the container(panel) and the frame
@@ -328,6 +328,18 @@ public class MainFrame {
                 System.exit(0);
             }
         });
+
+        // Create an empty label to act as a spacer
+        JLabel spacer2 = new JLabel();
+        spacer2.setPreferredSize(new Dimension(0, 10)); // Set preferred height to 100 pixels
+        panel.add(spacer2);
+
+        //footer
+        JLabel footer = new JLabel("Made by Fernanda");
+        footer.setFont(new Font("Arial", Font.BOLD, 10)); // Set font to Arial and size to 32
+        footer.setForeground(Color.decode("#b8a9b3")); // Set color
+        footer.setAlignmentX(Component.CENTER_ALIGNMENT); //center in display area
+        panel.add(footer); //adds the label to the container
 
 
     }
