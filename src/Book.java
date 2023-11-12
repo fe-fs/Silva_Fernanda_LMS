@@ -102,13 +102,13 @@ public class Book {
      */
     @Override
     public String toString() {
-        return "Book: " +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", barcode=" + barcode +
-                ", checkStatus=" + checkStatus +
-                ", dueDate=" + (dueDate != null ? dueDate : "null");
+        return " ID: " + id +
+                " | BARCODE: " + barcode +
+                " | STATUS: " + checkStatus +
+                " | DueDate: " + (dueDate != null ? dueDate : "null") + '\n' +
+                " TITLE: " + title + '\n' +
+                " AUTHOR: " + author + '\n' +
+                "-------------------------------------------------------------------------------------------------------";
     }
 
 

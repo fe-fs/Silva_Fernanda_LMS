@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -36,111 +37,80 @@ public class Library {
     }
 
     /**
-     * Method name: loadBooksFromFile
-     * This method loads books from a text file into the library's collection of books.
-     * @param Books_Database The path to the text file containing the books to be loaded.
-     * @throws IOException If an input or output exception occurred
+     * Method name: loadBooksFromDatabase
+     * This method loads books from a MySQL database into the library's collection of books.
+     * @throws SQLException If a database access error occurred
      */
-    public void loadBooksFromFile(String Books_Database) throws IOException {
-        // clear any existing books before loading new books from the text file.
+    public void loadBooksFromDatabase() throws SQLException {
+        // clear any existing books before loading new books from the database.
         books.clear();
 
-        // Load new books from the text file
+        // Load new books from the database
         try {
-            Scanner scanner = new Scanner(new File(Books_Database));
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] bookInfo = line.split(",");
+            DatabaseConnector dbConnector = new DatabaseConnector();
+            Connection connection = dbConnector.connect();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Books");
 
-                int id = Integer.parseInt(bookInfo[0]);
-                String title = bookInfo[1];
-                String author = bookInfo[2];
-                String barcode = bookInfo.length > 3 ? bookInfo[3] : "default_barcode";
-                LocalDate dueDate = !bookInfo[4].trim().equals("null") ? LocalDate.parse(bookInfo[4].trim()) : null;
-                String checkStatus = (dueDate != null) ? "checkedOut" : "checkedIn";
+            while (rs.next()) {
+                int id = rs.getInt("ID");
+                String title = rs.getString("Title");
+                String author = rs.getString("Author");
+                String barcode = rs.getString("Barcode");
+                LocalDate returnDate = rs.getDate("ReturnDate") != null ? rs.getDate("ReturnDate").toLocalDate() : null;
+                String checkStatus = (returnDate != null) ? "checkedOut" : "checkedIn";
 
                 Book book = new Book(id, title, author, barcode);
-                book.setDueDate(dueDate);
+                book.setDueDate(returnDate);
                 book.setCheckStatus(checkStatus);
                 books.add(book);
             }
-            scanner.close();
-            System.out.println("File Loaded Successfully!");
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found " + Books_Database + "\n ---- Check if path for Books_Database.txt has changed! ---- ");
+
+            System.out.println("Database Loaded Successfully!");
+        } catch (SQLException e) {
+            System.out.println("Cannot load books from the database: " + e.getMessage());
         }
 
         Collections.sort(books, Comparator.comparingInt(Book::getId));
     }
+
     /**
-     * Method name: addBookToFile
-     * This method adds a new book to the library's collection and saves it to a text file.
+     * Method name: addBookToDatabase
+     * This method adds a new book to the library's collection and saves it to a MySQL database.
      *
-     * @param Books_Database The path to the text file where the new book will be saved.
-     * @throws IOException If an input or output exception occurred
+     * @throws SQLException If a database access error occurred
      */
-    public void addBookToFile(String Books_Database, String title, String author, String barcode) throws IOException {
-        // Backup the original database
-        backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
+    public void addBookToDatabase(String title, String author, String barcode) throws SQLException {
+        // Create a new Book object
+        Book book = new Book(0, title, author, barcode); // the ID will be set later
 
-        // Load existing books from the text file
-        List<Book> books = new ArrayList<>();
-        try {
-            Scanner scanner = new Scanner(new File(Books_Database));
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] bookInfo = line.split(",");
-                int id = Integer.parseInt(bookInfo[0].trim());
-                books.add(new Book(id, bookInfo[1].trim(), bookInfo[2].trim(), bookInfo.length > 3 ? bookInfo[3].trim() : "default_barcode")); // Modified to include barcode
+        // Add new book to the database
+        try (Connection connection = new DatabaseConnector().connect()) {
+            // Get the maximum ID from the Books table
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT MAX(ID) FROM Books");
+            int maxId = 0;
+            if (rs.next()) {
+                maxId = rs.getInt(1);
             }
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found " + Books_Database + "\n ---- Check if path for Books_Database.txt has changed! ---- ");
-        }
 
-        // Generate a new ID by checking the .txt file for existing ID numbers and continuing from the last ID saved on it
-        int newId = books.stream().mapToInt(Book::getId).max().orElse(0) + 1;
+            // Set the ID of the new book to maxId + 1
+            book.setId(maxId + 1);
 
-        // Add new book to list -- Version for GUI -- modified it to take the book details as parameters instead of reading them from the console.
-        books.add(new Book(newId, title, author, barcode)); // Modified to include barcode
+            // Insert the new book
+            String sql = "INSERT INTO Books (ID, Title, Author, Barcode) VALUES (?, ?, ?, ?)";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setInt(1, book.getId());
+            pstmt.setString(2, book.getTitle());
+            pstmt.setString(3, book.getAuthor());
+            pstmt.setString(4, book.getBarcode());
+            pstmt.executeUpdate();
 
-        // Save updated list of books to text file
-        try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
-            for (Book book : books) {
-                String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate); // Modified to include dueDate
-            }
             System.out.println("Book added successfully!");
-        } catch (IOException e) {
-            System.out.println("Error writing to file " + Books_Database);
+        } catch (SQLException e) {
+            System.out.println("Error adding book to the database: " + e.getMessage());
         }
     }
-
-    /*
-     * Method name: removeBook
-     * This method removes a book from the library's collection using its ID number.
-     * @param id The ID number of the book to be removed.
-     * @throws IOException If an input or output exception occurred
-
-
-    // modify the removeBookID method to return a String indicating whether the book was removed or not found, instead of printing directly to the console.
-    public String removeBookID(int id, String Books_Database) throws IOException {
-        // Backup the original database
-        backupDatabase(Books_Database, Path_to_Database.databaseBackup);
-
-        int index = binarySearch(id, 0, books.size()-1);
-        if (index != -1){
-            books.remove(index);
-
-            // Update the original database
-            updateDatabase(Books_Database);
-
-            return "Book ID " + id + " removed!";
-        } else {
-            return "Book ID: " + id +  " not found";
-        }
-    }
-    */
 
     /**
      * Method name: removeBookBarcode
@@ -148,182 +118,117 @@ public class Library {
      *
      * @param identifier The ID or barcode of the book to be removed.
      * @param isBarcode A boolean flag indicating whether the identifier is a barcode. If true, the identifier is treated as a barcode; if false, it's treated as an ID.
-     * @throws IOException If an input or output exception occurred
+     * @throws SQLException If a database access error occurred
      */
-    //GUI modified the removeBookBarcode method to return a String indicating whether the book was removed or not found, instead of printing directly to the console.
-    public String removeBookBarcode(String identifier, boolean isBarcode) throws IOException {
-        // Backup the original database
-        backupDatabase(Path_to_Database.database, Path_to_Database.databaseBackup);
+    public String removeBookBarcode(String identifier, boolean isBarcode) throws SQLException {
+        // Remove the book from the database
+        String sql = "DELETE FROM Books WHERE " + (isBarcode ? "Barcode" : "ID") + " = ?";
 
-        // Find the book with the given identifier
-        Book bookToRemove = null;
-        for (Book book : books) {
-            if ((isBarcode && book.getBarcode().equals(identifier)) || (!isBarcode && String.valueOf(book.getId()).equals(identifier))) {
-                bookToRemove = book;
-                break;
-            }
-        }
+        try (Connection connection = new DatabaseConnector().connect();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
-        // If the book was found, remove it
-        if (bookToRemove != null) {
-            books.remove(bookToRemove);
-            System.out.println("Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " removed!");
-
-            // Update the ID numbers of the remaining books
-            for (int i = 0; i < books.size(); i++) {
-                books.get(i).setId(i + 1);
+            if (isBarcode) {
+                pstmt.setString(1, identifier);
+            } else {
+                pstmt.setInt(1, Integer.parseInt(identifier));
             }
 
-            // Update the original database
-            updateDatabase(Path_to_Database.database);
-            return "Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " removed!";
-        } else {
-            return "Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " not found";
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " removed!");
+
+                // Reorder the ids
+                reorderIds();
+
+                return "Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " removed!";
+            } else {
+                return "Book with " + (isBarcode ? "barcode " : "ID ") + identifier + " not found";
+            }
+        } catch (SQLException e) {
+            System.out.println("Error removing book from the database: " + e.getMessage());
+            return "Error removing book from the database: " + e.getMessage();
         }
     }
 
     /**
      * Method name: removeBookByTitle
      * This method removes a book from the library's collection by title, which is supplied by the user.
+     *
      * @param title The title of the book to be removed.
+     * @throws SQLException If a database access error occurred
      */
-    //modified the removeBookByTitle method to return a String indicating whether the book was removed or not found, instead of printing directly to the console.
-    public String removeBookByTitle(String title) {
-        // Sort the books by title for binary search
-        Collections.sort(books, Comparator.comparing(Book::getTitle));
+    public String removeBookByTitle(String title) throws SQLException {
+        // Remove the book from the database
+        String sql = "DELETE FROM Books WHERE Title = ?";
 
-        // Perform binary search to find the book by title
-        int index = binarySearchByTitle(title, 0, books.size() - 1);
+        try (Connection connection = new DatabaseConnector().connect();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
-        // If the book is found, remove it from the collection
-        if (index != -1) {
-            books.remove(index);
-            return "The book with title " + title + " was successfully removed from the database.";
-        } else {
-            return "The book with title " + title + " was not found in the database.";
-        }
-    }
+            pstmt.setString(1, title);
 
-    /**
-     * Method name: binarySearchByTitle
-     * This method performs a binary search on the library's collection of books to find a book with a specific title.
-     * @param title The title of the book to be found.
-     * @param left The leftmost index of the search range.
-     * @param right The rightmost index of the search range.
-     * @return The index of the book with the specified title, or -1 if not found.
-     */
-    public int binarySearchByTitle(String title, int left, int right) {
-        if (right >= left) {
-            int mid = left + (right - left) / 2;
+            int rowsAffected = pstmt.executeUpdate();
 
-            // If the book is present at the middle
-            if (books.get(mid).getTitle().equals(title))
-                return mid;
+            if (rowsAffected > 0) {
+                System.out.println("The book with title " + title + " was successfully removed from the database.");
 
-            // If the book title is lexicographically smaller
-            if (books.get(mid).getTitle().compareTo(title) > 0)
-                return binarySearchByTitle(title, left, mid - 1);
+                // Reorder the ids
+                reorderIds();
 
-            // Else the book can only be present in right subarray
-            return binarySearchByTitle(title, mid + 1, right);
-        }
+                return "The book with title " + title + " was successfully removed from the database.";
 
-        // We reach here when the book is not present in the list
-        return -1;
-    }
-
-    /**
-     * Method name: backupDatabase
-     * This method creates a backup of the original database file.
-     * @param originalFile The path to the original database file.
-     * @param backupFile The path to the backup file.
-     * @throws IOException If an input or output exception occurred
-     */
-    //create a backup from the last loaded file before update the database content
-    public void backupDatabase(String originalFile, String backupFile) throws IOException {
-        Path src = Paths.get(originalFile);
-        Path dest = Paths.get(backupFile);
-        Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
-    }
-    /**
-     * Method name: updateDatabase
-     * This method saves changes made to the library's collection of books to the database text file.
-     * @param filename The path to the database text file.
-     * @throws IOException If an input or output exception occurred
-     */
-    //save changes from the software to the database text file
-    public void updateDatabase(String filename) throws IOException {
-        try (PrintWriter out = new PrintWriter(filename)) {
-            for (Book book : books) {
-                String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                out.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate);
+            } else {
+                return "The book with title " + title + " was not found in the database.";
             }
+        } catch (SQLException e) {
+            System.out.println("Error removing book from the database: " + e.getMessage());
+            return "Error removing book from the database: " + e.getMessage();
         }
     }
-    /**
-     * Method name: binarySearch
-     * This method performs a binary search on the library's collection of books to find a book with a specific ID number.
-     * @param id The ID number of the book to be found.
-     * @param left The leftmost index of the search range.
-     * @param right The rightmost index of the search range.
-     * @return The index of the book with the specified ID number, or -1 if not found.
-     */
-    private int binarySearch(int id, int left, int right){
-        if(left > right){
-            return -1;
-        }
-        int mid = left + (right - left)/2;
-        if (books.get(mid).getId()==id){
-            return mid;
-        }else if(books.get(mid).getId()<id){
-            return binarySearch(id, mid+1, right);
-        }else{
-            return binarySearch(id,left,mid-1);
-        }
-    }
+
 
     /**
      * Method name: listBooks
      * This method lists all books currently in the library's collection.
      *
-     * @return
+     * @return A string representation of all books in the collection
+     * @throws SQLException If a database access error occurred
      */
-    public String listBooks(String filePath){
+    public String listBooks() throws SQLException {
         StringBuilder bookList = new StringBuilder();
-        // Reorganize IDs before listing books
-        try {
-            reorganizeIDs(filePath);
-            fillIDGaps(filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-       /* //print books in terminal
-        System.out.println("\n---------All Books in Database----------");
-        for(Book book:books){
-            System.out.println(book);
-        }
 
-        //create this thread to make a little pause for the user read the list
+        // Load books from the database
         try {
-            Thread.sleep(3000); // Pause for 3000 milliseconds, or 3 seconds
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return filePath;*/
+            DatabaseConnector dbConnector = new DatabaseConnector();
+            Connection connection = dbConnector.connect();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Books ORDER BY ID");
 
-        // Show in GUI
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line = reader.readLine();
-            while (line != null) {
-                bookList.append(line).append("\n");
-                line = reader.readLine();
+            while (rs.next()) {
+                int id = rs.getInt("ID");
+                String title = rs.getString("Title");
+                String author = rs.getString("Author");
+                String barcode = rs.getString("Barcode");
+                LocalDate dueDate = rs.getDate("DueDate") != null ? rs.getDate("DueDate").toLocalDate() : null;
+                String checkStatus = (dueDate != null) ? "checkedOut" : "checkedIn";
+
+                Book book = new Book(id, title, author, barcode);
+                book.setDueDate(dueDate);
+                book.setCheckStatus(checkStatus);
+
+                bookList.append(book.toString()).append("\n");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+
+            System.out.println("Books Loaded Successfully!");
+        } catch (SQLException e) {
+            System.out.println("Cannot load books from the database: " + e.getMessage());
         }
+
+        // Reorder the ids
+        reorderIds();
 
         return bookList.toString();
-
     }
 
 
@@ -336,34 +241,37 @@ public class Library {
      * @param title The title of the book to be checked out.
      * @return boolean Returns true if the book was successfully checked out, false otherwise.
      */
-    public String checkoutBook(String title, String Books_Database) {
-        Book bookToCheckout = null;
-        for (Book book : books) {
-            if (book.getTitle().equals(title)) {
-                bookToCheckout = book;
-                break;
+    public String checkoutBook(String title) throws SQLException {
+        // SQL query to get the book by title
+        String getBookSql = "SELECT * FROM Books WHERE Title = ?";
+
+        // SQL query to update the book status and due date
+        String updateBookSql = "UPDATE Books SET CheckStatus = ?, DueDate = ? WHERE Title = ?";
+
+        try (Connection connection = new DatabaseConnector().connect();
+             PreparedStatement pstmtGetBook = connection.prepareStatement(getBookSql);
+             PreparedStatement pstmtUpdateBook = connection.prepareStatement(updateBookSql)) {
+
+            // Get the book by title
+            pstmtGetBook.setString(1, title);
+            ResultSet rs = pstmtGetBook.executeQuery();
+
+            if (!rs.next()) {
+                return "Book not found in the library.";
+            } else if ("checkedOut".equals(rs.getString("CheckStatus"))) {
+                return "Book is already checked out.";
+            } else {
+                // Set the book as checked out and assign a due date 4 weeks from now
+                pstmtUpdateBook.setString(1, "checkedOut");
+                pstmtUpdateBook.setDate(2, java.sql.Date.valueOf(LocalDate.now().plus(4, ChronoUnit.WEEKS)));
+                pstmtUpdateBook.setString(3, title);
+                pstmtUpdateBook.executeUpdate();
+
+                return "Book checked out. Due date is in 4 weeks: " + LocalDate.now().plus(4, ChronoUnit.WEEKS);
             }
-        }
-
-        if (bookToCheckout == null) {
-            return "Book not found in the library.";
-        } else if ("checkedOut".equals(bookToCheckout.getCheckStatus())) {
-            return "Book is already checked out.";
-        } else {
-            bookToCheckout.setCheckStatus("checkedOut");
-            bookToCheckout.setDueDate(LocalDate.now().plus(4, ChronoUnit.WEEKS));
-
-            // Save updated list of books to text file
-            try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
-                for (Book book : books) {
-                    String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                    writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
-                }
-            } catch (IOException e) {
-                return "Error writing to file " + Books_Database;
-            }
-
-            return "Book checked out. Due date is in 4 weeks: " + bookToCheckout.getDueDate();
+        } catch (SQLException e) {
+            System.out.println("Error checking out book: " + e.getMessage());
+            return "Error checking out book: " + e.getMessage();
         }
     }
 
@@ -374,97 +282,92 @@ public class Library {
      * If the due date has passed, it informs the user about a fine. It then prints a message indicating that the book was successfully checked in.
      *
      * @param title The title of the book to be checked in.
-     * @param Books_Database The path to the text file where the updated book information will be saved.
+     *
      * @return boolean Returns true if the book was successfully checked in, false otherwise.
      * @throws IOException If an input or output exception occurred
      */
-    public String checkInBook(String title, String Books_Database) throws IOException {
-        Book bookToCheckIn = null;
-        for (Book book : books) {
-            if (book.getTitle().equals(title)) {
-                bookToCheckIn = book;
-                break;
-            }
-        }
+    public String checkInBook(String title) throws SQLException {
+        // SQL query to get the book by title
+        String getBookSql = "SELECT * FROM Books WHERE Title = ?";
 
-        if (bookToCheckIn == null) {
-            return "Book not found in the library.";
-        } else if (!"checkedOut".equals(bookToCheckIn.getCheckStatus())) {
-            return "This book was not checked out.";
-        } else {
-            bookToCheckIn.setCheckStatus("checkedIn");
-            if (bookToCheckIn.getDueDate().isBefore(LocalDate.now())) {
-               return "The due date for this book has passed. There is a fine of $5 to be paid at the library front.";
-            }
-            bookToCheckIn.setDueDate(null);
+        // SQL query to update the book status and due date
+        String updateBookSql = "UPDATE Books SET CheckStatus = ?, DueDate = NULL WHERE Title = ?";
 
-            // Save updated list of books to text file
-            try (PrintWriter writer = new PrintWriter(new FileWriter(Books_Database))) {
-                for (Book book : books) {
-                    String dueDate = book.getDueDate() != null ? book.getDueDate().toString() : "null";
-                    writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + dueDate + "," + book.getCheckStatus());
+        try (Connection connection = new DatabaseConnector().connect();
+             PreparedStatement pstmtGetBook = connection.prepareStatement(getBookSql);
+             PreparedStatement pstmtUpdateBook = connection.prepareStatement(updateBookSql)) {
+
+            // Get the book by title
+            pstmtGetBook.setString(1, title);
+            ResultSet rs = pstmtGetBook.executeQuery();
+
+            if (!rs.next()) {
+                return "Book not found in the library.";
+            } else if (!"checkedOut".equals(rs.getString("CheckStatus"))) {
+                return "This book was not checked out.";
+            } else if (rs.getDate("DueDate") == null) {
+                return "This book does not have a due date.";
+            } else {
+                // Set the book as checked in and remove the due date
+                pstmtUpdateBook.setString(1, "checkedIn");
+                pstmtUpdateBook.setString(2, title);
+                pstmtUpdateBook.executeUpdate();
+
+                if (rs.getDate("DueDate").toLocalDate().isBefore(LocalDate.now())) {
+                    return "The due date for this book has passed. There is a fine of $5 to be paid at the library front.";
                 }
-                System.out.println("Database updated successfully!");
-            } catch (IOException e) {
-                System.out.println("Error writing to file " + Books_Database);
+
+                return "Book checked in successfully.";
             }
-            return "Book checked in successfully.";
+        } catch (SQLException e) {
+            System.out.println("Error checking in book: " + e.getMessage());
+            return "Error checking in book: " + e.getMessage();
         }
     }
 
-    /**
-     * Method name: reorganizeIDs
-     * This method reorganizes the IDs of the books in the library's collection and writes the updated information back to the text file.
-     * @param Books_Database The path to the text file where the updated book information will be saved.
-     * @throws IOException If an input or output exception occurred
-     */
-    public static void reorganizeIDs(String Books_Database) throws IOException {
-        // Sort the books by ID
-        Collections.sort(books, Comparator.comparingInt(Book::getId));
+    public void reorderIds() throws SQLException {
+        try (Connection connection = new DatabaseConnector().connect()) {
+            // Start transaction
+            connection.setAutoCommit(false);
 
-        // Reassign IDs
-        for (int i = 0; i < books.size(); i++) {
-            books.get(i).setId(i + 1);  // Assuming IDs start from 1
-        }
+            // Get the maximum ID from the Books table
+            String getMaxIdSql = "SELECT MAX(id) FROM Books";
+            PreparedStatement pstmtGetMaxId = connection.prepareStatement(getMaxIdSql);
+            ResultSet rs = pstmtGetMaxId.executeQuery();
+            rs.next();
+            int maxId = rs.getInt(1);
 
-        // Save the updated list of books to the text file
-        try {
-            PrintWriter writer = new PrintWriter(new File(Books_Database));
-            for (Book book : books) {
-                writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + book.getDueDate());
+            // Update the IDs that are 0 or duplicate with new IDs
+            String updateInvalidIdSql = "UPDATE Books SET id = ? WHERE id = 0 OR id IN (SELECT id FROM (SELECT id FROM Books GROUP BY id HAVING COUNT(*) > 1) AS a)";
+            PreparedStatement pstmtUpdateInvalidId = connection.prepareStatement(updateInvalidIdSql);
+            ResultSet rsInvalidId = pstmtUpdateInvalidId.executeQuery();
+            while (rsInvalidId.next()) {
+                pstmtUpdateInvalidId.setInt(1, ++maxId);
+                pstmtUpdateInvalidId.executeUpdate();
             }
-            writer.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found " + Books_Database + "\n ---- Check if path for Books_Database.txt has changed! ---- ");
-        }
-    }
 
-    /**
-     * Method name: fillIDGaps
-     * This method fills the gaps in the IDs of the books in the library's collection and writes the updated information back to the text file.
-     * @param Books_Database The path to the text file where the updated book information will be saved.
-     * @throws IOException If an input or output exception occurred
-     */
-    public static void fillIDGaps(String Books_Database) throws IOException {
-        // Sort the books by ID
-        Collections.sort(books, Comparator.comparingInt(Book::getId));
-
-        // Reassign IDs
-        int expectedID = 1;  // Assuming IDs start from 1
-        for (Book book : books) {
-            book.setId(expectedID++);
-        }
-        //System.out.println("ID reassigned!");
-
-        // Save the updated list of books to the text file
-        try {
-            PrintWriter writer = new PrintWriter(new File(Books_Database));
-            for (Book book : books) {
-                writer.println(book.getId() + "," + book.getTitle() + "," + book.getAuthor() + "," + book.getBarcode() + "," + book.getDueDate());
+            // Create a temporary table with new id order
+            String createTempTableSql = "CREATE TEMPORARY TABLE temp_table AS SELECT id, title, ROW_NUMBER() OVER (ORDER BY id) as new_id FROM Books";
+            try (PreparedStatement pstmt = connection.prepareStatement(createTempTableSql)) {
+                pstmt.executeUpdate();
             }
-            writer.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found " + Books_Database + "\n ---- Check if path for Books_Database.txt has changed! ---- ");
+
+            // Update the original table with new ids
+            String updateIdSql = "UPDATE Books INNER JOIN temp_table ON Books.id = temp_table.id SET Books.id = temp_table.new_id";
+            try (PreparedStatement pstmt = connection.prepareStatement(updateIdSql)) {
+                pstmt.executeUpdate();
+            }
+
+            // Verify the checkout status
+            String verifyCheckoutStatusSql = "UPDATE Books SET CheckStatus = IF(DueDate IS NULL, 'checkedIn', 'checkedOut')";
+            try (PreparedStatement pstmt = connection.prepareStatement(verifyCheckoutStatusSql)) {
+                pstmt.executeUpdate();
+            }
+
+            // Commit the transaction
+            connection.commit();
+        } catch (SQLException e) {
+            System.out.println("Error reordering ids: " + e.getMessage());
         }
     }
 }

@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * This class represents the main frame of the GUI for the Library Management System.
@@ -34,7 +35,7 @@ public class MainFrame {
         JFrame frame = new JFrame("Custom GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //means the application will be exited when the frame is closed.
         frame.getContentPane().setBackground(Color.decode("#dbd0d6"));//background color of the content pane of the frame
-        frame.setSize(600, 800); // Set the size of the JFrame
+        frame.setSize(650, 900); // Set the size of the JFrame
         frame.setLocationRelativeTo(null); // This will center the JFrame
 
         // Create a margin between the container(panel) and the frame
@@ -62,7 +63,7 @@ public class MainFrame {
         panel.add(spacer1);
 
         // Create a JTextArea for the list be read - simple text editor where you can set or get text
-        JTextArea bookListArea = new JTextArea(5, 10);
+        JTextArea bookListArea = new JTextArea(10, 10);
         bookListArea.setEditable(false);  // Make it read-only
         bookListArea.setOpaque(false);    // Make it non-opaque for JScrollPane appear with color
         // Set the font to Arial, bold, and 18pt
@@ -167,11 +168,16 @@ public class MainFrame {
 
         // Action Listeners to connect each button to the correct methods in library class
 
-        //Button1
+//Button1
         buttonListBooks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String bookList = library.listBooks(Path_to_Database.database); // method returns a string representing a list of books, which is stored in the bookList variable.
+                String bookList = null;
+                try {
+                    bookList = library.listBooks(); // method returns a string representing a list of books, which is stored in the bookList variable.
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 bookListArea.setText(bookList); //This displays the list of books in the text area.
             }
         });
@@ -193,17 +199,21 @@ public class MainFrame {
                     }
                 }
 
-                // Call the addBookToFile method
+                // Call the addBookToDatabase method
                 try {
-                    library.addBookToFile(Path_to_Database.database, title, author, barcode);
-                    library.loadBooksFromFile(Path_to_Database.database);
-                    library.listBooks(Path_to_Database.database);
-                } catch (IOException ex) {
+                    library.addBookToDatabase(title, author, barcode);
+                    library.loadBooksFromDatabase();
+                } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
 
                 // Update the book list in your GUI
-                String books = library.listBooks(Path_to_Database.database);
+                String books = null;
+                try {
+                    books = library.listBooks();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 bookListArea.setText(books);
             }
         });
@@ -223,12 +233,17 @@ public class MainFrame {
                     String result = library.removeBookBarcode(identifier, isBarcode);
                     // Show message dialog with the result
                     JOptionPane.showMessageDialog(frame, result);
-                } catch (IOException ex) {
+                } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
 
                 // Update the book list in your GUI
-                String books = library.listBooks(Path_to_Database.database);
+                String books = null;
+                try {
+                    books = library.listBooks();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 bookListArea.setText(books);
             }
         });
@@ -241,12 +256,22 @@ public class MainFrame {
                 String title = JOptionPane.showInputDialog(frame, "Enter the title of the book to remove:");
 
                 // Call the removeBookByTitle method
-                String result = library.removeBookByTitle(title);
+                String result = null;
+                try {
+                    result = library.removeBookByTitle(title);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 // Show message dialog with the result
                 JOptionPane.showMessageDialog(frame, result);
 
                 // Update the book list in your GUI
-                String books = library.listBooks(Path_to_Database.database);
+                String books = null;
+                try {
+                    books = library.listBooks();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 bookListArea.setText(books);
             }
         });
@@ -259,15 +284,20 @@ public class MainFrame {
                 String title = JOptionPane.showInputDialog(frame, "Enter the title of the book to checkout:");
 
                 // Call the checkoutBook method
-                String result = library.checkoutBook(title, Path_to_Database.database);
-                // Show message dialog with the result
-                JOptionPane.showMessageDialog(frame, result);
+                try {
+                    String result = library.checkoutBook(title);
+                    // Show message dialog with the result
+                    JOptionPane.showMessageDialog(frame, result);
 
-                // Update the book list in your GUI
-                String books = library.listBooks(Path_to_Database.database);
-                bookListArea.setText(books);
+                    // Update the book list in your GUI
+                    String books = library.listBooks();
+                    bookListArea.setText(books);
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(frame, "Error: " + ex.getMessage());
+                }
             }
         });
+
 
         //Button6
         buttonCheckInBook.addActionListener(new ActionListener() {
@@ -277,18 +307,17 @@ public class MainFrame {
                 String title = JOptionPane.showInputDialog(frame, "Enter the title of the book to checkIn:");
 
                 // Call the checkoutBook method
-                String result = null;
                 try {
-                    result = library.checkInBook(title, Path_to_Database.database);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-                // Show message dialog with the result
-                JOptionPane.showMessageDialog(frame, result);
+                    String result = library.checkInBook(title);
+                    // Show message dialog with the result
+                    JOptionPane.showMessageDialog(frame, result);
 
-                // Update the book list in your GUI
-                String books = library.listBooks(Path_to_Database.database);
-                bookListArea.setText(books);
+                    // Update the book list in your GUI
+                    String books = library.listBooks();
+                    bookListArea.setText(books);
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(frame, "Error: " + ex.getMessage());
+                }
             }
         });
 
@@ -299,6 +328,8 @@ public class MainFrame {
                 System.exit(0);
             }
         });
+
+
     }
 
     /**

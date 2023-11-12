@@ -13,6 +13,7 @@
  */
 
 import java.io.IOException;
+import java.sql.Connection;
 
 
 /**
@@ -38,7 +39,11 @@ public class Main {
 
         //Loading last saved version
         System.out.println("Loading last saved version file...\n"); // Print a message to indicate loading process
-        library.loadBooksFromFile(Path_to_Database.database); // Load books from the file specified by Path_to_Database.database
+       // library.loadBooksFromFile(Path_to_Database.database); // Load books from the file specified by Path_to_Database.database
+
+        //Create connection to database mySQL
+        DatabaseConnector dbConnector = new DatabaseConnector();
+        Connection connection = dbConnector.connect();
 
         //removed menu and switch to work in terminal - will use only GUI from now on
     }

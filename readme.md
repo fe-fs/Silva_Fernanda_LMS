@@ -14,6 +14,7 @@ Deploying software.
 
 ------The documentation will be added to the project repository later on and linked here ----
 
+
 And then creating a simple JAVA program prototype that implements this documentation to create the LMS
 
 Library Management System (LMS) is a console-based application for managing a library's collection of books.
