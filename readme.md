@@ -1,6 +1,6 @@
 Library Management System in JAVA - Prototype and documentation made for Software Engineer Class
 
-Name: Fernanda Frederico Ribeiro da Silva
+Name: Fernanda Silva
 Class: CEN-3024C-16046
 Professor: Walauskis
 
